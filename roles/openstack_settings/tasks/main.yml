@@ -1,0 +1,6 @@
+---
+
+- include: nova_network.yml
+#- include: neutron.yml
+- include: common.yml
+

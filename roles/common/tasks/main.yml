@@ -1,0 +1,24 @@
+---
+
+- name: install python-software-properties
+  apt: >
+    pkg={{ item }}
+    state=installed
+  with_items:
+   - python-software-properties
+  when: ansible_distribution == 'Ubuntu' and ansible_lsb.release == "12.04"
+
+- name: add repository for icehouse
+  apt_repository: >
+    repo='deb http://ubuntu-cloud.archive.canonical.com/ubuntu precise-updates/icehouse main'
+    state=present
+  when: ansible_distribution == 'Ubuntu' and ansible_lsb.release == "12.04"
+
+- name: apt-get update
+  apt: update_cache=yes cache_valid_time=3600
+
+- name: apt-get upgrade
+  apt: upgrade=yes cache_valid_time=3600
+
+- name: apt-get dist-upgrade
+  apt: upgrade=dist cache_valid_time=3600
