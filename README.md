@@ -102,24 +102,24 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     ``group_vars/all`` が変数設定のファイルです。
     大体OpenStackでの設定項目と同じ変数名にしてあるつもりなので変更する場合もそんなに困らないはずです。
     
-    1. ControllerノードのIPアドレス
+    1.ControllerノードのIPアドレス
     ```
     controller_int_ip: 192.168.10.50
     ```
     
-    2. インスタンスの外部接続用アドレス範囲
+    2.インスタンスの外部接続用アドレス範囲
     
     ```
     ranges: 192.168.10.112/28
     ```
     
-    3. Adminユーザのパスワード
+    3.Adminユーザのパスワード
     
     ```
     admin_password: secrete
     ```
     
-    4. 一般ユーザのパスワード
+    4.一般ユーザのパスワード
     
     ```
     generic_password01: secrete
@@ -142,7 +142,7 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     
     コマンドラインでも利用出来ます。
     
-    1. Controlサーバへログイン  
+    1.Controlサーバへログイン  
     
     オペレーションを行うユーザは ``operate_user`` で設定したものになります。
     
@@ -152,7 +152,7 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     . generic01-openrc.sh
     ```
     
-    2. インスタンスの起動
+    2.インスタンスの起動
     
     flavorは ``nova flavor-list`` で確認出来ます。  
     imageは ``nova image-list`` で確認できます。 
@@ -167,7 +167,7 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --key-name mykey Ubuntu14.04_001
     ```
     
-    3. インスタンスへのログイン  
+    3.インスタンスへのログイン  
     IPアドレスを確認してログインします。    
     フローティングIP(外部から接続出来るIP)は自動的に付与する設定にしています。  
     Ubuntuの場合とCentOSでログインユーザが違います。SSHのキーペアを利用してログインします。   
