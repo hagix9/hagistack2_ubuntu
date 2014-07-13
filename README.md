@@ -27,6 +27,9 @@ OpenStackのバージョンIcehouseをインストールするAnsibleのPlaybook
 * Glanceへ登録する他イメージ対応(CoreOSくらいは)
 * 各コンポーネントのDBシンク実行時のライブラリ利用
 * Proxy対応(Glanceへ登録する際しか対応していないのでapt時、Openstackのコマンド利用時に対応する必要)
+* カーネルパラメータの設定(大丈夫なのでipforwardの設定をしてないですが追加する。)
+* LiveMigrationの設定追加
+* Qemuの設定追加
 
 環境
 ----
