@@ -110,8 +110,8 @@ keypaire_name: mykey
 region: RegionOne
 
 # Log Options
-log_debug: True
-log_verbose: True
-#log_debug: False
-#log_verbose: False
+#log_debug: True
+#log_verbose: True
+log_debug: False
+log_verbose: False
 
