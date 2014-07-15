@@ -36,3 +36,27 @@ nova add-floating-ip Ubuntu14.04_001 192.168.10.115
 ssh -i mykey ubuntu@192.168.10.113
 ssh -i mykey cloud-user@192.168.10.113
 
+
+# LXC For Nova Compute
+apt-get install lxc -y
+sed 's/^USE_LXC_BRIDGE="true"/USE_LXC_BRIDGE="false"/' /etc/default/lxc-net
+
+apt-get install nova-compute-lxc -y
+restart nova-compute
+
+wget https://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-root.tar.gz
+truncate --size 2GB ubuntu-14.04-lxc.img
+sudo losetup -f ubuntu-14.04-lxc.img
+losetup -a
+mkfs /dev/loop0
+mkdir mnt
+mount /dev/loop0 mnt
+cd mnt
+tar -xvf ../trusty-server-cloudimg-amd64-root.tar.gz
+cd ../
+umount /dev/loop1 
+
+glance image-create --name ubuntu-14.04-lxc --is-public True \
+    --disk-format raw --container-format bare \
+    --progress --file ubuntu-14.04-lxc.img
+nova boot --flavor 1 --image ubuntu-14.04-lxc --security_group default --key-name mykey Ubuntu14.04_001
