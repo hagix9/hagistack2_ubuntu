@@ -50,18 +50,6 @@
   with_dict: secgroup_rules
   when: network_type == "nova-network"
 
-- name: secgroup settings
-  shell: >
-    . {{ operate_user_home }}/admin-openrc.sh ; nova secgroup-add-rule
-    {{ item.value.name }}
-    {{ item.value.protocol }}
-    {{ item.value.from_port }}
-    {{ item.value.to_port }}
-    {{ item.value.cidr }}
-  ignore_errors: True
-  with_dict: secgroup_rules
-  when: network_type == "nova-network"
-
 - name: floating ip settings
   shell: >
     . {{ operate_user_home }}/admin-openrc.sh ; nova floating-ip-bulk-create {{ item.value.ranges }}
