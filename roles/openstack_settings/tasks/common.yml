@@ -1,5 +1,31 @@
 ---
 
+- name: create a user to use the openstack
+  user: >
+    name={{ operate_user }}
+    home={{ operate_user_home }}
+    password={{ operate_user_password }}
+    shell=/bin/bash
+    state=present
+    append=yes
+    groups=sudo
+
+- name: distribute openrc for admin
+  template: >
+    src=admin-openrc.sh.j2
+    dest={{ operate_user_home }}/admin-openrc.sh
+    owner={{ operate_user }}
+    group={{ operate_user }}
+    mode=0600
+
+- name: distribute openrc for generic01
+  template: >
+    src=generic01-openrc.sh.j2
+    dest={{ operate_user_home }}/generic01-openrc.sh
+    owner={{ operate_user }}
+    group={{ operate_user }}
+    mode=0600
+
 - command: >
     ls {{ operate_user_home }}/{{ keypaire_name }}
   register: exist_keypair
@@ -10,7 +36,7 @@
   shell: >
     . {{ operate_user_home }}/admin-openrc.sh ; nova keypair-add {{ keypaire_name }} > {{ operate_user_home }}/{{ keypaire_name }}
   ignore_errors: True
-  when: network_type == "nova-network" and exist_keypair.rc == 2
+  when: exist_keypair.rc == 2
 
 - file: >
     path={{ operate_user_home }}/{{ keypaire_name }}
@@ -18,7 +44,7 @@
     group={{ operate_user }}
     mode=0600
   ignore_errors: True
-  when: network_type == "nova-network" and exist_keypair.rc == 2
+  when: exist_keypair.rc == 2
 
 - shell: >
     . {{ operate_user_home }}/admin-openrc.sh ; test $(nova flavor-list | grep m1.tiny | awk -F'|' '{print $5}' | sed -e 's/^  *//g') -eq 0
@@ -30,11 +56,11 @@
   shell: >
     . {{ operate_user_home }}/admin-openrc.sh ; nova flavor-delete m1.tiny
   ignore_errors: True
-  when: network_type == "nova-network" and check_m1_tiny.rc != 0
+  when: check_m1_tiny.rc != 0
 
 - name: remake m1.tiny
   shell: >
     . {{ operate_user_home }}/admin-openrc.sh ; nova flavor-create m1.tiny 1 512 0 1
   ignore_errors: True
-  when: network_type == "nova-network" and check_m1_tiny.rc != 0
+  when: check_m1_tiny.rc != 0
 
