@@ -70,4 +70,17 @@ ovs-vsctl add-br br-int
 ovs-vsctl add-br br-ex
 ovs-vsctl add-port br-ex eth0
 
+#Network Config Sample
+cat /etc/network/interfaces
+auto eth0
+iface eth0 inet static
+    address 0.0.0.0
 
+auto br-ex
+iface br-ex inet static
+    address 192.168.10.50
+    netmask 255.255.255.0
+    network 192.168.10.0
+    broadcast 192.168.10.255
+    bridge_ports eth0
+    bridge_stp off
