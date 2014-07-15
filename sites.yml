@@ -99,6 +99,12 @@
   roles:
     - { role: ceilometer_compute, when: use_ceilometer == "use" }
 
+- name: OpenStack Settings
+  hosts: openstack_ctl
+  sudo: true
+  roles:
+    - { role: openstack_settings }
+
 - name: Neutron Controller Install
   hosts: openstack_ctl
   sudo: true
@@ -113,10 +119,4 @@
   roles:
     - { role: neutron_network, when: network_type == "neutron-flat" }
     #- { role: neutron_control, when: network_type == "neutron-l3" }
-
-- name: OpenStack Settings
-  hosts: openstack_ctl
-  sudo: true
-  roles:
-    - { role: openstack_settings }
 

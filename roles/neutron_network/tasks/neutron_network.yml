@@ -1,5 +1,13 @@
 ---
 
+- name: install openvswitch
+  apt: >
+    pkg={{ item }}
+    state=installed
+  with_items:
+    - "openvswitch-switch"
+  when: network_type == "neutron-flat"
+
 - name: install neutron
   apt: >
     pkg={{ item }}
@@ -9,6 +17,19 @@
     - "neutron-dhcp-agent"
     - "neutron-metadata-agent"
     - "neutron-plugin-openvswitch-agent"
+  when: network_type == "neutron-flat"
+
+- command: /usr/bin/which nova-api
+  register: br_int_exist
+  ignore_errors: True
+  failed_when: br_int_exist.rc not in [0, 1]
+
+- name: setting openswitch for br-int
+  shell: >
+    ovs-vsctl add-br br-int
+  ignore_errors: True
+  when: network_type == "neutron-flat" and br_int_exist.rc == 1
+
 
 - name: setting neutron config
   template: >
