@@ -26,6 +26,17 @@
     state=installed
   when: network_type == "nova-network"
 
+- name: setting nova-compute config
+  template: >
+    src=nova-compute.conf.j2
+    dest=/etc/nova/nova-compute.conf
+    owner=nova
+    group=nova
+    mode=0600
+    backup=yes
+  notify:
+    - restart nova-compute
+
 - name: setting nova config for nova-network
   template: >
     src=nova.conf_nova-network
