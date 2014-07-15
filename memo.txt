@@ -63,6 +63,7 @@ nova boot --flavor 1 --image ubuntu-14.04-lxc --security_group default --key-nam
 
 #Neutron
 
+apt-get install openvswitch-switch -y
 #For Network Node
 ovs-vsctl add-br br-int
 
@@ -81,6 +82,9 @@ iface br-ex inet static
     address 192.168.10.50
     netmask 255.255.255.0
     network 192.168.10.0
+    gateway 192.168.10.1
+    dns-nameservers 192.168.10.1
     broadcast 192.168.10.255
     bridge_ports eth0
     bridge_stp off
+
