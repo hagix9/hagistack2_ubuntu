@@ -60,3 +60,14 @@ glance image-create --name ubuntu-14.04-lxc --is-public True \
     --disk-format raw --container-format bare \
     --progress --file ubuntu-14.04-lxc.img
 nova boot --flavor 1 --image ubuntu-14.04-lxc --security_group default --key-name mykey Ubuntu14.04_001
+
+#Neutron
+
+#For Network Node
+ovs-vsctl add-br br-int
+
+#For Network and Compute Node
+ovs-vsctl add-br br-ex
+ovs-vsctl add-port br-ex eth0
+
+

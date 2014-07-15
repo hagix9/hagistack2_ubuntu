@@ -42,7 +42,7 @@
     backup=yes
   notify:
     - restart nova control
-  when: network_type == "neutron"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - name: nova db sync
   command: /usr/bin/nova-manage db sync

@@ -1,0 +1,6 @@
+- name: restart neutron control
+  service: name={{ item }} state=restarted
+  with_items:
+    - "neutron-server"
+    - "nova-api"
+
