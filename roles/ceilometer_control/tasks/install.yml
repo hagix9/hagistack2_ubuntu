@@ -1,0 +1,29 @@
+---
+
+- name: install ceilometer
+  apt: >
+    pkg={{ item }}
+    state=installed
+  with_items:
+   - "ceilometer-api"
+   - "ceilometer-api"
+   - "ceilometer-collector"
+   - "ceilometer-agent-central"
+   - "ceilometer-agent-notification"
+   - "ceilometer-alarm-evaluator"
+   - "ceilometer-alarm-notifier"
+   - "python-ceilometerclient"
+
+- name: setting ceilometer config
+  template: >
+    src=ceilometer.conf.j2
+    dest=/etc/ceilometer/ceilometer.conf
+    owner=ceilometer
+    group=ceilometer
+    mode=0644
+  notify: 
+    - restart ceilometer control
+
+- name: ceilometer db sync
+  command: /usr/bin/ceilometer-dbsync
+

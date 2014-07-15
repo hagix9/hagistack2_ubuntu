@@ -1,0 +1,17 @@
+---
+
+- name: add ceilometer vhost
+  rabbitmq_vhost: 
+    name=/ceilometer
+    state=present
+
+- name: add ceilometer user
+  rabbitmq_user:
+    user={{ ceilometer_mq_user }}
+    password={{ ceilometer_mq_password }}
+    vhost=/ceilometer
+    configure_priv=.*
+    read_priv=.*
+    write_priv=.*
+    state=present
+

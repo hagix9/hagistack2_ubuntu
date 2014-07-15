@@ -1,0 +1,4 @@
+---
+
+- include: ceilometer_compute.yml
+

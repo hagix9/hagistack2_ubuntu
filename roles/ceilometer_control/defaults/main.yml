@@ -1,0 +1,12 @@
+service_users:
+  - name: ceilometer
+    password: "{{ ceilometer_keystone_password }}"
+
+services:
+  - name: ceilometer
+    type: metering
+    description: "OpenStack Telemetry Service"
+    public_url: http://{{ controller_ext_ip }}:8777
+    internal_url: http://{{ controller_int_ip }}:8777
+    admin_url: http://{{ controller_int_ip }}:8777
+

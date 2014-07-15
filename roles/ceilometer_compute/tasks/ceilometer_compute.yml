@@ -1,0 +1,24 @@
+---
+
+- name: install nova-compute
+  apt: >
+    pkg={{ item }}
+    state=installed
+  with_items:
+   - nova-compute-kvm
+   - python-novaclient
+
+- name: install ceilometer-agent-compute
+  apt: >
+    pkg=ceilometer-agent-compute
+    state=installed
+
+- name: setting ceilometer config
+  template: >
+    src=ceilometer.conf.j2
+    dest=/etc/ceilometer/ceilometer.conf
+    owner=ceilometer
+    group=ceilometer
+    mode=0644
+  notify:
+    - restart ceilometer-agent-compute
