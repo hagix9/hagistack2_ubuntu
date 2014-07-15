@@ -61,6 +61,7 @@
     - { role: nova_control }
 
 - name: Nova Compute Install
+  #hosts: openstack_compute
   hosts: all
   sudo: true
   roles:
@@ -76,14 +77,27 @@
   hosts: openstack_ctl
   sudo: true
   roles:
-    - { role: cinder_control, when: use_cinder == "yes" }
+    - { role: cinder_control, when: use_cinder == "use" }
 
 - name: Cinder Volume Install
   #hosts: openstack_volume
   hosts: openstack_ctl
   sudo: true
   roles:
-    - { role: cinder_volume, when: use_cinder == "yes" }
+    - { role: cinder_volume, when: use_cinder == "use" }
+
+- name: Ceilometer Controller Install
+  hosts: openstack_ctl
+  sudo: true
+  roles:
+    - { role: ceilometer_control, when: use_ceilometer == "use" }
+
+- name: Nova Compute Install
+  #hosts: openstack_compute
+  hosts: all
+  sudo: true
+  roles:
+    - { role: ceilometer_compute, when: use_ceilometer == "use" }
 
 - name: OpenStack Settings
   hosts: openstack_ctl
