@@ -60,6 +60,6 @@
     backup=yes
   notify:
     - restart nova-compute
-  when: network_type == "neutron"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 
