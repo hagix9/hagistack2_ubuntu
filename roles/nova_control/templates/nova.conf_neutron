@@ -93,7 +93,7 @@ connection=mysql://nova:{{ mysql_nova_password }}@{{ controller_int_ip }}/nova
 [spice]
 enabled=true
 agent_enabled=true
-html5proxy_base_url=http://192.168.10.50:6082/spice_auto.html
+html5proxy_base_url=http://{{ controller_int_ip }}:6082/spice_auto.html
 server_listen=0.0.0.0
 server_proxyclient_address=$my_ip
 keymap=ja
