@@ -26,6 +26,43 @@
     state=installed
   when: network_type == "nova-network"
 
+- name: setting kernel parameta
+  template: >
+    src=sysctl.conf.j2
+    dest=/etc/sysctl.conf
+    owner=root
+    group=root
+    mode=0644
+    backup=yes
+  notify:
+    - reflect setting of kernel
+
+- name: setting qemu config
+  template: >
+    src=qemu.conf.j2
+    dest=/etc/libvirt/qemu.conf
+    owner=root
+    group=root
+    mode=0600
+    backup=yes
+  notify:
+    - restart libvirt-bin
+
+- name: setting libvirt config
+  template: >
+    src={{ item.src }}
+    dest={{ item.dst }}
+    owner=root
+    group=root
+    mode=0644
+    backup=yes
+  with_items:
+    - { src: 'libvirtd.conf.j2',    dst: '/etc/libvirt/libvirtd.conf' }
+    - { src: 'libvirt-bin.conf.j2', dst: '/etc/init/libvirt-bin.conf' }
+    - { src: 'libvirt-bin.j2',      dst: '/etc/default/libvirt-bin'   }
+  notify:
+    - restart libvirt-bin
+
 - name: setting nova-compute config
   template: >
     src=nova-compute.conf.j2

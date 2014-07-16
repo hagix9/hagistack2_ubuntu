@@ -5,13 +5,12 @@
     pkg={{ item }}
     state=installed
   with_items:
-    - "neutron-l3-agent"
-    - "neutron-dhcp-agent"
-    - "neutron-metadata-agent"
+    - "neutron-common"
+    - "neutron-plugin-ml2"
     - "neutron-plugin-openvswitch-agent"
   when: network_type == "neutron-flat"
 
-- command: br_int exist check
+- command: ovs-vsctl show | grep br-int
   register: br_int_exist
   ignore_errors: True
   failed_when: br_int_exist.rc not in [0, 1]
@@ -22,18 +21,6 @@
   ignore_errors: True
   when: network_type == "neutron-flat" and br_int_exist.rc == 1
 
-- name: setting kernel parameta
-  template: >
-    src=sysctl.conf.j2
-    dest=/etc/sysctl.conf
-    owner=root
-    group=root
-    mode=0644
-    backup=yes
-  notify:
-    - reflect setting of kernel
-  when: network_type == "neutron-flat"
-
 - name: setting neutron config
   template: >
     src=neutron.conf.j2
@@ -43,7 +30,7 @@
     mode=0640
     backup=yes
   notify:
-    - restart neutron network
+    - restart neutron compute
   when: network_type == "neutron-flat"
 
 - name: check nova_tenant_id
@@ -61,42 +48,6 @@
   with_items: nova_tenant_id.stdout_lines
   when: network_type == "neutron-flat"
 
-- name: setting neutron l3_agent config
-  template: >
-    src=l3_agent.ini.j2
-    dest=/etc/neutron/l3_agent.ini
-    owner=root
-    group=neutron
-    mode=0640
-    backup=yes
-  notify:
-    - restart neutron network
-  when: network_type == "neutron-flat"
-
-- name: setting neutron dhcp_agent config
-  template: >
-    src=dhcp_agent.ini.j2
-    dest=/etc/neutron/dhcp_agent.ini
-    owner=root
-    group=neutron
-    mode=0640
-    backup=yes
-  notify:
-    - restart neutron network
-  when: network_type == "neutron-flat"
-
-- name: setting neutron metadata_agent config
-  template: >
-    src=metadata_agent.ini.j2
-    dest=/etc/neutron/metadata_agent.ini
-    owner=root
-    group=neutron
-    mode=0640
-    backup=yes
-  notify:
-    - restart neutron network
-  when: network_type == "neutron-flat"
-
 - name: setting neutron ml2 config
   template: >
     src=ml2_conf.ini.j2
@@ -106,6 +57,6 @@
     mode=0640
     backup=yes
   notify:
-    - restart neutron network
+    - restart neutron compute
   when: network_type == "neutron-flat"
 

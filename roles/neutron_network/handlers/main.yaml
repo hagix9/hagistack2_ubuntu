@@ -6,3 +6,5 @@
     - "neutron-metadata-agent"
     - "neutron-plugin-openvswitch-agent"
 
+- name: reflect setting of kernel
+  shell: sysctl -p

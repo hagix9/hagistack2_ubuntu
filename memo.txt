@@ -88,3 +88,17 @@ iface br-ex inet static
     bridge_ports eth0
     bridge_stp off
 
+#Neutron Flat
+service_tenant_id=`keystone tenant-list | grep service | awk '{print $2}'`
+neutron net-create --tenant-id $service_tenant_id sharednet1 \
+--shared --provider:network_type flat --provider:physical_network physnet1 
+
+neutron subnet-create \
+--tenant-id $service_tenant_id --gateway 192.168.122.1 --dns-nameserver 192.168.122.1 \
+--allocation-pool start=192.168.122.150,end=192.168.122.200 sharednet1 192.168.122.0/24 
+
+network_id=`neutron net-list | grep sharednet1 | awk '{print $2}'` 
+
+nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$network_id --key-name mykey Ubuntu14.04_001
+
+ssh -i mykey ubuntu@192.168.10.113

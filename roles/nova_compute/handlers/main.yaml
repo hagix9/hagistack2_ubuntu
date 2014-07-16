@@ -6,3 +6,8 @@
 - name: restart nova-network
   service: name=nova-network state=restarted
 
+- name: reflect setting of kernel
+  shell: sysctl -p
+
+- name: restart libvirt-bin
+  service: name=libvirt-bin state=restarted

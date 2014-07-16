@@ -1,0 +1,31 @@
+---
+
+- name: Nova Compute Install
+  #hosts: openstack_compute
+  hosts: all
+  sudo: true
+  roles:
+    - { role: nova_compute }
+
+- name: Neutron Controller Install
+  hosts: openstack_ctl
+  sudo: true
+  roles:
+    - { role: neutron_control, when: network_type == "neutron-flat" }
+    #- { role: neutron_control, when: network_type == "neutron-l3" }
+
+- name: Neutron Network Install
+  #hosts: openstack_network
+  hosts: openstack_ctl
+  sudo: true
+  roles:
+    - { role: neutron_network, when: network_type == "neutron-flat" }
+    #- { role: neutron_control, when: network_type == "neutron-l3" }
+
+- name: Neutron Compute Install
+  #hosts: openstack_comptue
+  hosts: all
+  sudo: true
+  roles:
+    - { role: neutron_compute, when: network_type == "neutron-flat" }
+    #- { role: neutron_compute, when: network_type == "neutron-l3" }

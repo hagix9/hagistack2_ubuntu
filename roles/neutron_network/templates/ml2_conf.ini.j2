@@ -5,3 +5,9 @@ mechanism_drivers = openvswitch
 enable_security_group = True
 firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
 
+[ml2_type_flat]
+flat_networks = physnet1
+
+[ovs]
+bridge_mappings = physnet1:br-ex
+
