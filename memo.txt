@@ -91,12 +91,12 @@ iface br-ex inet static
 cat /etc/network/interfaces
 auto eth0
 iface eth0 inet static
-       address 192.168.122.51
+       address 192.168.10.51
        netmask 255.255.255.0
-       network 192.168.122.0
-       broadcast 192.168.122.255
-       gateway 192.168.122.1
-       dns-nameservers 192.168.122.1
+       network 192.168.10.0
+       broadcast 192.168.10.255
+       gateway 192.168.10.1
+       dns-nameservers 192.168.10.1
 
 auto  eth1
 iface eth1 inet manual
@@ -111,8 +111,8 @@ neutron net-create --tenant-id $SERVICE_TENANT_ID sharednet1 \
 --shared --provider:network_type flat --provider:physical_network physnet1
 
 neutron subnet-create \
---ip-version 4 --tenant-id $SERVICE_TENANT_ID sharednet1 192.168.122.0/24 \
---allocation-pool start=192.168.122.151,end=192.168.122.200 \
+--ip-version 4 --tenant-id $SERVICE_TENANT_ID sharednet1 192.168.10.0/24 \
+--allocation-pool start=192.168.10.151,end=192.168.10.200 \
 --dns_nameservers list=true 8.8.4.4 8.8.8.8
 
 NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'` 
@@ -128,4 +128,5 @@ ssh -i mykey ubuntu@192.168.10.113
 cd /etc/init/; for i in $(ls -1 neutron-* | cut -d \. -f 1); do sudo service $i restart; done
 cd /etc/init/; for i in $(ls -1 nova-* | cut -d \. -f 1); do sudo service $i restart; done
 
+tail -f /var/lib/nova/instances/*/console.log
 

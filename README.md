@@ -11,14 +11,15 @@ OpenStackのバージョンIcehouseをインストールするAnsibleのPlaybook
 * Novaのインストール
 * Cinderのインストール
 * Glanceへのイメージ登録
+* Neutronのインストール(FlatなL2モードのみ対応)
 
 まだ出来ないこと
 ----------------
 早く出来るようにします。  
 
-* Neutronのインストール
+* Neutronのインストール(L3モード)
 * Heatのインストール
-* Ceilometerのインストール
+* Ceilometerのインストール(動作が怪しいので要調査)
 * Troveのインストール
 * CinderのバックエンドのNFS対応
 * Cinderのループバックデバイス対応(今はVGとしてVolume用サーバに ``cinder-volumes`` が作成されている前提)
@@ -27,9 +28,6 @@ OpenStackのバージョンIcehouseをインストールするAnsibleのPlaybook
 * Glanceへ登録する他イメージ対応(CoreOSくらいは)
 * 各コンポーネントのDBシンク実行時のライブラリ利用
 * Proxy対応(Glanceへ登録する際しか対応していないのでapt時、Openstackのコマンド利用時に対応する必要)
-* カーネルパラメータの設定(大丈夫なのでipforwardの設定をしてないですが追加する。)
-* LiveMigrationの設定追加
-* Qemuの設定追加
 
 環境
 ----
@@ -42,10 +40,74 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
 * OpenStackをインストールするサーバ(Ubuntu14.04がインストールされているサーバ1台以上、Ansible実行サーバからsshでパスワード無しでログイン出来るようにしておく。)
 * インターネットに接続可能な環境（HTTP プロキシ使用可能）
 
-ネットワーク環境(nova-network)
+ネットワーク環境
 ------------------------------
-今のところnova-networkにしか対応していないのでNIC1枚あれば大丈夫です。
+最低限NIC1枚あれば大丈夫です。  
 
+ 1. ``nova-network`` を利用する場合のインターフェース設定
+
+    テナント別にネットワークを設定するといったことは出来ません。  
+    そういった要件が無ければインスタンスの起動が早いことやトラブルが少ないことなどもあり便利です。  
+    但し、次のバージョンで ``nova-network`` は存在しないかもしれません。
+    ``group_vars/all`` の ``int_nic: eth0`` の ``eth0`` だけ環境にあわせてください。
+
+ 2. NIC1枚でNeutronを利用する場合のインターフェース設定
+
+    OpenStackインストール前にNetwork、ComputeノードになるマシンへOpenVswitchをインストールしインターフェースの設定を行っておきます。  
+
+    ```
+    apt-get install openvswitch-switch -y
+    ovs-vsctl add-br br-int
+    ovs-vsctl add-br br-ex
+    ovs-vsctl add-port br-ex eth0
+    vi /etc/network/interfaces
+
+    auto eth0
+    iface eth0 inet static
+        address 0.0.0.0
+    
+    auto br-ex
+    iface br-ex inet static
+        address 192.168.10.50
+        netmask 255.255.255.0
+        network 192.168.10.0
+        gateway 192.168.10.1
+        dns-nameservers 192.168.10.1
+        broadcast 192.168.10.255
+        bridge_ports eth0
+        bridge_stp off
+    ```
+
+ 3. NIC複数枚でNeutronを利用する場合のインターフェース設定
+
+    OpenVswitchの設定は先にしておく必要がありませんがツールがまだ対応していないので今のところは先に設定しておきます。  
+    ``br-ex`` と対応付ける ``eth0`` はインターネットなどに出て行く外部インターフェースを指定します。  
+    内部インターフェースは設定だけしておきます。ここでは ``eth1`` になっています。  
+
+    ```
+    apt-get install openvswitch-switch -y
+    ovs-vsctl add-br br-int
+    ovs-vsctl add-br br-ex
+    ovs-vsctl add-port br-ex eth0
+
+    vi /etc/network/interfaces
+    auto eth0
+    iface eth0 inet static
+           address 192.168.10.51
+           netmask 255.255.255.0
+           network 192.168.10.0
+           broadcast 192.168.10.255
+           gateway 192.168.10.1
+           dns-nameservers 192.168.10.1
+    
+    auto  eth1
+    iface eth1 inet manual
+            up   ifconfig $IFACE 0.0.0.0 up
+            up   ip link set $IFACE promisc on
+            down ip link set $IFACE promisc off
+            down ifconfig $IFACE down
+
+    ```
 
 利用方法
 --------
@@ -99,7 +161,7 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     #192.168.10.54 ansible_ssh_user=stack ansible_sudo_pass=stack
     ```
     
- 3. 変数の設定
+ 3-1. 変数の設定(nova-network)
     
     最低限設定する必要する項目は以下です。  
     ``group_vars/all`` が変数設定のファイルです。
@@ -114,6 +176,42 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     
     ```
     ranges: 192.168.10.112/28
+    ```
+    
+    3.Adminユーザのパスワード
+    
+    ```
+    admin_password: secrete
+    ```
+    
+    4.一般ユーザのパスワード
+    
+    ```
+    generic_password01: secrete
+    ```
+
+ 3-2. 変数の設定(Neutron Flat(L2のみ))
+    
+    最低限設定する必要する項目は以下です。  
+    ``group_vars/all`` が変数設定のファイルです。
+    大体OpenStackでの設定項目と同じ変数名にしてあるつもりなので変更する場合もそんなに困らないはずです。
+    
+    1.ControllerノードのIPアドレス
+    ```
+    controller_int_ip: 192.168.10.50
+    ```
+    
+    2.neutronを利用するように設定  
+
+    network_typeを変更します。  
+    外部向けIPアドレスの範囲も設定します。  
+ 
+    
+    ```
+    #network_type: nova-network
+    network_type: neutron-flat
+    ip_pool_start: 192.168.10.151
+    iP_pool_end: 192.168.10.200
     ```
     
     3.Adminユーザのパスワード
@@ -168,6 +266,15 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     ```
     nova boot --flavor 1 --image centos6.5 --security_group default --key-name mykey centos6.5_001
     nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --key-name mykey Ubuntu14.04_001
+    ```
+
+    上記は ``nova-network`` の時の起動方法で以下は ``neutron`` の場合です。  
+    利用するネットワークを指定して起動します。  
+
+    ```
+    NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'`
+    nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$NETWORK_ID --key-name mykey Ubuntu14.04_001
+    nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$NETWORK_ID --key-name mykey centos6.5_001
     ```
     
     3.インスタンスへのログイン  

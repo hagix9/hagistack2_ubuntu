@@ -25,8 +25,8 @@ ntp_servers:
   - ntp3.jst.mfeed.ad.jp
 
 # Controller Host IP's
-controller_ext_ip: 192.168.122.50
-controller_int_ip: 192.168.122.50
+controller_ext_ip: 192.168.10.50
+controller_int_ip: 192.168.10.50
 
 # MySQL Options
 mysql_root_password: root
@@ -109,14 +109,37 @@ secgroup_rules:
     cidr: 0.0.0.0/0
 float_ip_ranges:
   range01: 
-    ranges: 192.168.122.112/28
+    ranges: 192.168.10.112/28
 
 # Network(for neutron)
+#network_type: neutron-l3
 #network_type: neutron-flat
 mysql_neutron_password: password
 neutron_keystone_password: secrete
 neutron_mq_user: neutron
 neutron_mq_password: secrete
+# For Neutron Flat
+neutron_flat_networks:
+  network01:
+    name: sharednet1
+    sbunet: 192.168.10.0/24
+    ip_pool_start: 192.168.10.151
+    iP_pool_end: 192.168.10.200
+    dns1: 8.8.4.4
+    dns2: 8.8.8.8
+secgroup_rules:
+  rule01:
+    name: default
+    protocol: tcp
+    from_port: 22
+    to_port: 22
+    cidr: 0.0.0.0/0
+  rule02:
+    name: default
+    protocol: icmp
+    from_port: -1
+    to_port: -1
+    cidr: 0.0.0.0/0
 
 # Keypair
 keypaire_name: mykey

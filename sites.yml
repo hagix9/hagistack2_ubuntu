@@ -99,7 +99,7 @@
   roles:
     - { role: ceilometer_compute, when: use_ceilometer == "use" }
 
-- name: OpenStack Settings
+- name: OpenStack Common Settings 
   hosts: openstack_ctl
   sudo: true
   roles:
@@ -128,3 +128,28 @@
     - { role: neutron_compute, when: network_type == "neutron-flat" }
     #- { role: neutron_compute, when: network_type == "neutron-l3" }
 
+- name: OpenStack Network Settings 
+  hosts: openstack_ctl
+  sudo: true
+  roles:
+    - { role: network_settings }
+
+- name: OpenStack Neutron Service Restart For Control
+  hosts: openstack_ctl
+  sudo: true
+  roles:
+    - { role: neutron_restart_ctl }
+
+- name: OpenStack Neutron Service Restart For Network
+  #hosts: openstack_network
+  hosts: all
+  sudo: true
+  roles:
+    - { role: neutron_restart_network }
+
+- name: OpenStack Neutron Service Restart For Compute
+  #hosts: openstack_compute
+  hosts: all
+  sudo: true
+  roles:
+    - { role: neutron_restart_compute }
