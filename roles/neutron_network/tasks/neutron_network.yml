@@ -1,5 +1,16 @@
 ---
 
+- command: ovs-vsctl show | grep br-int
+  register: br_int_exist
+  ignore_errors: True
+  failed_when: br_int_exist.rc not in [0, 1]
+
+- name: setting openswitch for br-int
+  shell: >
+    ovs-vsctl add-br br-int
+  ignore_errors: True
+  when: network_type == "neutron-flat" and br_int_exist.rc == 1
+
 - name: install neutron
   apt: >
     pkg={{ item }}
@@ -10,17 +21,6 @@
     - "neutron-metadata-agent"
     - "neutron-plugin-openvswitch-agent"
   when: network_type == "neutron-flat"
-
-- command: br_int exist check
-  register: br_int_exist
-  ignore_errors: True
-  failed_when: br_int_exist.rc not in [0, 1]
-
-- name: setting openswitch for br-int
-  shell: >
-    ovs-vsctl add-br br-int
-  ignore_errors: True
-  when: network_type == "neutron-flat" and br_int_exist.rc == 1
 
 - name: setting kernel parameta
   template: >

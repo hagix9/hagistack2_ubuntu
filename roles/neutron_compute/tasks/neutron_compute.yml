@@ -1,15 +1,5 @@
 ---
 
-- name: install neutron
-  apt: >
-    pkg={{ item }}
-    state=installed
-  with_items:
-    - "neutron-common"
-    - "neutron-plugin-ml2"
-    - "neutron-plugin-openvswitch-agent"
-  when: network_type == "neutron-flat"
-
 - command: ovs-vsctl show | grep br-int
   register: br_int_exist
   ignore_errors: True
@@ -20,6 +10,16 @@
     ovs-vsctl add-br br-int
   ignore_errors: True
   when: network_type == "neutron-flat" and br_int_exist.rc == 1
+
+- name: install neutron
+  apt: >
+    pkg={{ item }}
+    state=installed
+  with_items:
+    - "neutron-common"
+    - "neutron-plugin-ml2"
+    - "neutron-plugin-openvswitch-agent"
+  when: network_type == "neutron-flat"
 
 - name: setting neutron config
   template: >

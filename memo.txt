@@ -1,8 +1,10 @@
-rxport OS_USERNAME=admin
+export OS_USERNAME=admin
 export OS_PASSWORD=secrete
 export OS_TENANT_NAME=admin
 export OS_AUTH_URL=http://192.168.10.50:35357/v2.0/
 export PS1='\u@\h \W(keystone)\$ '
+
+#For nova-network
 
 nova network-create            \
 nova_network1                  \
@@ -36,7 +38,6 @@ nova add-floating-ip Ubuntu14.04_001 192.168.10.115
 ssh -i mykey ubuntu@192.168.10.113
 ssh -i mykey cloud-user@192.168.10.113
 
-
 # LXC For Nova Compute
 apt-get install lxc -y
 sed 's/^USE_LXC_BRIDGE="true"/USE_LXC_BRIDGE="false"/' /etc/default/lxc-net
@@ -62,16 +63,14 @@ glance image-create --name ubuntu-14.04-lxc --is-public True \
 nova boot --flavor 1 --image ubuntu-14.04-lxc --security_group default --key-name mykey Ubuntu14.04_001
 
 #Neutron
-
-apt-get install openvswitch-switch -y
-#For Network Node
-ovs-vsctl add-br br-int
-
 #For Network and Compute Node
+apt-get install openvswitch-switch -y
+ovs-vsctl add-br br-int
 ovs-vsctl add-br br-ex
 ovs-vsctl add-port br-ex eth0
 
 #Network Config Sample
+#Single NIC
 cat /etc/network/interfaces
 auto eth0
 iface eth0 inet static
@@ -88,17 +87,45 @@ iface br-ex inet static
     bridge_ports eth0
     bridge_stp off
 
-#Neutron Flat
-service_tenant_id=`keystone tenant-list | grep service | awk '{print $2}'`
-neutron net-create --tenant-id $service_tenant_id sharednet1 \
---shared --provider:network_type flat --provider:physical_network physnet1 
+#Two NIC
+cat /etc/network/interfaces
+auto eth0
+iface eth0 inet static
+       address 192.168.122.51
+       netmask 255.255.255.0
+       network 192.168.122.0
+       broadcast 192.168.122.255
+       gateway 192.168.122.1
+       dns-nameservers 192.168.122.1
+
+auto  eth1
+iface eth1 inet manual
+        up   ifconfig $IFACE 0.0.0.0 up
+        up   ip link set $IFACE promisc on
+        down ip link set $IFACE promisc off
+        down ifconfig $IFACE down
+
+#Neutron Flat Network
+SERVICE_TENANT_ID=`keystone tenant-list | grep service | awk '{print $2}'`
+neutron net-create --tenant-id $SERVICE_TENANT_ID sharednet1 \
+--shared --provider:network_type flat --provider:physical_network physnet1
 
 neutron subnet-create \
---tenant-id $service_tenant_id --gateway 192.168.122.1 --dns-nameserver 192.168.122.1 \
---allocation-pool start=192.168.122.150,end=192.168.122.200 sharednet1 192.168.122.0/24 
+--ip-version 4 --tenant-id $SERVICE_TENANT_ID sharednet1 192.168.122.0/24 \
+--allocation-pool start=192.168.122.151,end=192.168.122.200 \
+--dns_nameservers list=true 8.8.4.4 8.8.8.8
 
-network_id=`neutron net-list | grep sharednet1 | awk '{print $2}'` 
+NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'` 
+nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$NETWORK_ID --key-name mykey Ubuntu14.04_001
+nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$NETWORK_ID --key-name mykey centos6.5_001
 
-nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$network_id --key-name mykey Ubuntu14.04_001
+nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 
+nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 
 
 ssh -i mykey ubuntu@192.168.10.113
+
+#Service Restart
+cd /etc/init/; for i in $(ls -1 neutron-* | cut -d \. -f 1); do sudo service $i restart; done
+cd /etc/init/; for i in $(ls -1 nova-* | cut -d \. -f 1); do sudo service $i restart; done
+
+

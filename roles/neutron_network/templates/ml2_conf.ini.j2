@@ -1,13 +1,17 @@
 [ml2]
-type_drivers = flat,vlan,gre
-tenant_network_types = vlan,gre
-mechanism_drivers = openvswitch
+type_drivers = local,flat
+mechanism_drivers = openvswitch,l2population
+
+[ml2_type_flat]
+flat_networks = *
+
+[securitygroup]
 enable_security_group = True
 firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
 
-[ml2_type_flat]
-flat_networks = physnet1
-
 [ovs]
+enable_tunneling = False
+local_ip = {{ ansible_ssh_host }}
+network_vlan_ranges = physnet1
 bridge_mappings = physnet1:br-ex
 

@@ -1,8 +1,9 @@
 [DEFAULT]
-core_plugin = neutron.plugins.ml2.plugin.Ml2Plugin
-service_plugins = neutron.services.l3_router.l3_router_plugin.L3RouterPlugin
+core_plugin = ml2
+service_plugins = router
 auth_strategy = keystone
-dhcp_agent_notification = True
+allow_overlapping_ips = True
+#dhcp_agent_notification = True
 rpc_backend = neutron.openstack.common.rpc.impl_kombu
 control_exchange = neutron
 
@@ -45,6 +46,7 @@ admin_tenant_name=service
 admin_user=nova
 admin_password={{ neutron_keystone_password }}
 signing_dir = $state_path/keystone-signing
+auth_uri = http://{{ controller_int_ip }}:5000
 
 [database]
 connection=mysql://neutron:{{ mysql_neutron_password }}@{{ controller_int_ip }}/neutron
