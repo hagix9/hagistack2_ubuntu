@@ -138,18 +138,18 @@
   hosts: openstack_ctl
   sudo: true
   roles:
-    - { role: neutron_restart_ctl }
+    - { role: neutron_restart_ctl, when: network_type == "neutron-flat" }
 
 - name: OpenStack Neutron Service Restart For Network
   #hosts: openstack_network
   hosts: all
   sudo: true
   roles:
-    - { role: neutron_restart_network }
+    - { role: neutron_restart_network, when: network_type == "neutron-flat" }
 
 - name: OpenStack Neutron Service Restart For Compute
   #hosts: openstack_compute
   hosts: all
   sudo: true
   roles:
-    - { role: neutron_restart_compute }
+    - { role: neutron_restart_compute, when: network_type == "neutron-flat" }
