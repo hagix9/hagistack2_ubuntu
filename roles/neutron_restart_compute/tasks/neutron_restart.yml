@@ -6,3 +6,6 @@
     - "openvswitch-switch"
     - "neutron-plugin-openvswitch-agent"
 
+- name: start nova-compute
+  service: name=nova-compute state=started
+

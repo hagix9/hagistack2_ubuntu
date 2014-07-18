@@ -21,6 +21,11 @@
     - "neutron-plugin-openvswitch-agent"
   when: network_type == "neutron-flat"
 
+- command: grep FOR_CHK /etc/neutron/neutron.conf
+  register: chk_neutron_conf
+  ignore_errors: True
+  failed_when: chk_neutron_conf.rc not in [0, 1]
+
 - name: setting neutron config
   template: >
     src=neutron.conf.j2
@@ -31,22 +36,23 @@
     backup=yes
   notify:
     - restart neutron compute
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" and chk_neutron_conf.rc == 1
 
-- name: check nova_tenant_id
-  shell: . /home/stack/admin-openrc.sh ; keystone tenant-list | grep service | awk '{print $2}'
-  register: nova_tenant_id
-  when: network_type == "neutron-flat"
+#- name: check nova_tenant_id
+#  shell: . /home/stack/admin-openrc.sh ; keystone tenant-list | grep service | awk '{print $2}'
+#  register: nova_tenant_id
+#  ignore_errors: True
+#  when: network_type == "neutron-flat"
 
-- name: setting neutron config nova_tenant_id
-  lineinfile:
-    dest=/etc/neutron/neutron.conf
-    state=present
-    regexp='xxxx'
-    line="nova_admin_tenant_id = {{ item }}"
-    backup=yes
-  with_items: nova_tenant_id.stdout_lines
-  when: network_type == "neutron-flat"
+#- name: setting neutron config nova_tenant_id
+#  lineinfile:
+#    dest=/etc/neutron/neutron.conf
+#    state=present
+#    regexp='xxxx'
+#    line="nova_admin_tenant_id = {{ item }}"
+#    backup=yes
+#  with_items: nova_tenant_id.stdout_lines
+#  when: network_type == "neutron-flat"
 
 - name: setting neutron ml2 config
   template: >

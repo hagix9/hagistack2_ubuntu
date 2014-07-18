@@ -142,7 +142,7 @@
 
 - name: OpenStack Neutron Service Restart For Network
   #hosts: openstack_network
-  hosts: all
+  hosts: openstack_ctl
   sudo: true
   roles:
     - { role: neutron_restart_network, when: network_type == "neutron-flat" }
@@ -153,3 +153,4 @@
   sudo: true
   roles:
     - { role: neutron_restart_compute, when: network_type == "neutron-flat" }
+
