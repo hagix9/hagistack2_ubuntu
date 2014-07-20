@@ -2,9 +2,9 @@
   service: name={{ item }} state=restarted
   with_items:
     - "neutron-l3-agent"
-    - "neutron-dhcp-agent"
     - "neutron-metadata-agent"
     - "neutron-plugin-openvswitch-agent"
+    - "neutron-dhcp-agent"
 
 - name: reflect setting of kernel
   shell: sysctl -p
