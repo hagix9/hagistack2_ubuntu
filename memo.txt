@@ -33,14 +33,13 @@ nova boot --flavor 1 --image centos6.5 --security_group default --key-name mykey
 
 nova add-floating-ip centos6.5_001 192.168.10.113
 nova add-floating-ip centos6.5_002 192.168.10.114
-nova add-floating-ip Ubuntu14.04_001 192.168.10.115
-
+nova add-floating-ip Ubuntu14.04_001 192.168.10.115 
 ssh -i mykey ubuntu@192.168.10.113
 ssh -i mykey cloud-user@192.168.10.113
 
 # LXC For Nova Compute
 apt-get install lxc -y
-sed 's/^USE_LXC_BRIDGE="true"/USE_LXC_BRIDGE="false"/' /etc/default/lxc-net
+sed -i 's/^USE_LXC_BRIDGE="true"/USE_LXC_BRIDGE="false"/' /etc/default/lxc-net
 
 apt-get install nova-compute-lxc -y
 restart nova-compute
@@ -57,15 +56,22 @@ tar -xvf ../trusty-server-cloudimg-amd64-root.tar.gz
 cd ../
 umount /dev/loop1 
 
+#Dekiagari inmage
+wget -O- http://oss.fulltrust.co.jp/disk_images/ubuntu-14.04-lxc.img.tar.xz | tar Jxvf -
+
 glance image-create --name ubuntu-14.04-lxc --is-public True \
     --disk-format raw --container-format bare \
     --progress --file ubuntu-14.04-lxc.img
+#For Nova Network
 nova boot --flavor 1 --image ubuntu-14.04-lxc --security_group default --key-name mykey Ubuntu14.04_001
+#For Neutron
+NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'` 
+nova boot --flavor 1 --image ubuntu-14.04-lxc --security_group default --nic net-id=$NETWORK_ID --key-name mykey Ubuntu14.04_001
 
 #Neutron
 #For Network and Compute Node
 apt-get install openvswitch-switch -y
-ovs-vsctl add-br br-int
+#ovs-vsctl add-br br-int
 ovs-vsctl add-br br-ex
 ovs-vsctl add-port br-ex eth0
 
@@ -115,6 +121,22 @@ neutron subnet-create \
 --allocation-pool start=192.168.10.151,end=192.168.10.200 \
 --dns_nameservers list=true 8.8.4.4 8.8.8.8
 
+#Neutron L3 Network
+neutron router-create router01
+ROUTER_ID=`neutron router-list | grep router01 | awk '{ print $2 }'` 
+neutron net-create int_net 
+neutron subnet-create \
+--gateway 10.10.10.1 --dns_nameserver 8.8.8.8 int_net 10.10.10.0/24 
+INT_SUBNET_ID=`neutron net-list | grep int_net | awk '{ print $6 }'`
+neutron router-interface-add $ROUTER_ID $INT_SUBNET_ID 
+neutron net-create ext_net --router:external=True 
+neutron subnet-create ext_net \
+--allocation-pool start=192.168.10.151,end=192.168.10.200 \
+--gateway 192.168.10.1 --dns-nameserver  10.0.0.0/24 --disable-dhcp 
+EXT_NET_ID=`neutron net-list | grep ext_net | awk '{ print $2 }'` 
+neutron router-gateway-set $Router_ID $EXZT_Net_ID 
+
+#Boot Instance For Neutron
 NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'` 
 nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$NETWORK_ID --key-name mykey Ubuntu14.04_001
 nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$NETWORK_ID --key-name mykey centos6.5_001
