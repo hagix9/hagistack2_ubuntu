@@ -24,8 +24,8 @@
   with_items:
    - openstack-dashboard-ubuntu-theme
 
-- name: setting horizon
-  template: >
+- name: setting horizon for nova-network
+  template: > 
     src=local_settings.py.j2
     dest=/etc/openstack-dashboard/local_settings.py
     owner=root
@@ -33,6 +33,18 @@
     mode=0644
   notify:
     - restart horizon use spice
+  when: network_type == "nova-network"
+
+- name: setting horizon for neutron
+  template: > 
+    src=local_settings_neutron.py.j2
+    dest=/etc/openstack-dashboard/local_settings.py
+    owner=root
+    group=root
+    mode=0644
+  notify:
+    - restart horizon use spice
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 #- name: setting horizon
 #  template: >

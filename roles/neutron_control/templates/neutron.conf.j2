@@ -1,6 +1,6 @@
 [DEFAULT]
 core_plugin = ml2
-service_plugins = router
+service_plugins = router,firewall,lbaas,vpnaas,metering
 auth_strategy = keystone
 allow_overlapping_ips = True
 #dhcp_agent_notification = True
@@ -52,7 +52,6 @@ auth_uri = http://{{ controller_int_ip }}:5000
 connection=mysql://neutron:{{ mysql_neutron_password }}@{{ controller_int_ip }}/neutron
 
 [service_providers]
-service_plugins = neutron.services.l3_router.l3_router_plugin.L3RouterPlugin
 service_provider=LOADBALANCER:Haproxy:neutron.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
 service_provider=VPN:openswan:neutron.services.vpn.service_drivers.ipsec.IPsecVPNDriver:default
 

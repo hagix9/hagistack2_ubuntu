@@ -3,6 +3,7 @@
   with_items:
     - "neutron-l3-agent"
     - "neutron-metadata-agent"
+    - "neutron-lbaas-agent"
     - "neutron-plugin-openvswitch-agent"
     - "neutron-dhcp-agent"
 
