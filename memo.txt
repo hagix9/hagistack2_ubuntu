@@ -126,20 +126,30 @@ neutron router-create router01
 ROUTER_ID=`neutron router-list | grep router01 | awk '{ print $2 }'` 
 neutron net-create int_net 
 neutron subnet-create \
---gateway 10.10.10.1 --dns_nameserver 8.8.8.8 int_net 10.10.10.0/24 
+--gateway 10.10.10.1 --dns-nameserver 8.8.8.8 int_net 10.10.10.0/24 
 INT_SUBNET_ID=`neutron net-list | grep int_net | awk '{ print $6 }'`
 neutron router-interface-add $ROUTER_ID $INT_SUBNET_ID 
 neutron net-create ext_net --router:external=True 
 neutron subnet-create ext_net \
 --allocation-pool start=192.168.10.151,end=192.168.10.200 \
---gateway 192.168.10.1 --dns-nameserver  10.0.0.0/24 --disable-dhcp 
+--gateway 192.168.10.1 --dns-nameserver 8.8.8.8 192.168.10.0/24 --disable-dhcp 
 EXT_NET_ID=`neutron net-list | grep ext_net | awk '{ print $2 }'` 
-neutron router-gateway-set $Router_ID $EXZT_Net_ID 
+neutron router-gateway-set $ROUTER_ID $EXT_NET_ID 
 
-#Boot Instance For Neutron
-NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'` 
+#Boot Instance For Neutron FLAT
+NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'`
 nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$NETWORK_ID --key-name mykey Ubuntu14.04_001
 nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$NETWORK_ID --key-name mykey centos6.5_001
+
+#Boot Instance For Neutron L3
+INT_NET_ID=`neutron net-list | grep int_net | awk '{ print $2 }'` 
+nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$INT_NET_ID --key-name mykey Ubuntu14.04_001
+nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$INT_NET_ID --key-name mykey centos6.5_001
+neutron floatingip-create ext_net
+DEVICE_ID=`nova list | grep Ubuntu14.04_001 | awk '{ print $2 }'` 
+PORT_ID=`neutron port-list -- --device_id $DEVICE_ID | grep 10.10.10.2 | awk '{ print $2 }'` 
+FLOATING_ID=`neutron floatingip-list | grep 192.168.10.152 | awk '{ print $2 }'` 
+neutron floatingip-associate $FLOATING_ID $PORT_ID 
 
 nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 
 nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 
