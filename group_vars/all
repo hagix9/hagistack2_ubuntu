@@ -88,7 +88,7 @@ cinder_vg_name: cinder-volumes
 #cinder_backend: nfs
 
 # Network(for nova-network)
-#network_type: nova-network
+network_type: nova-network
 nova_networks:
   network01:
     fixed_range: 10.10.10.0/24
@@ -117,7 +117,7 @@ neutron_keystone_password: secrete
 neutron_mq_user: neutron
 neutron_mq_password: secrete
 # For Neutron Flat
-network_type: neutron-flat
+#network_type: neutron-flat
 neutron_flat_networks:
   network01:
     name: sharednet1
