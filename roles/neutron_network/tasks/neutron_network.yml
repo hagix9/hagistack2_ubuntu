@@ -5,11 +5,17 @@
   ignore_errors: True
   failed_when: br_int_exist.rc not in [0, 1]
 
-- name: setting openswitch for br-int
+- name: setting openswitch add br-int for neutron-flat
   shell: >
     ovs-vsctl add-br br-int
   ignore_errors: True
   when: network_type == "neutron-flat" and br_int_exist.rc == 1
+
+- name: setting openswitch add br-int for neutron-l3
+  shell: >
+    ovs-vsctl add-br br-int
+  ignore_errors: True
+  when: network_type == "neutron-l3" and br_int_exist.rc == 1
 
 - name: install neutron
   apt: >
@@ -21,7 +27,7 @@
     - "neutron-metadata-agent"
     - "neutron-lbaas-agent"
     - "neutron-plugin-openvswitch-agent"
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - name: setting kernel parameta
   template: >
@@ -33,14 +39,14 @@
     backup=yes
   notify:
     - reflect setting of kernel
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - command: grep FOR_CHK /etc/neutron/neutron.conf
   register: chk_neutron_conf
   ignore_errors: True
   failed_when: chk_neutron_conf.rc not in [0, 1]
 
-- name: setting neutron config
+- name: setting neutron config for neutron flat
   template: >
     src=neutron.conf.j2
     dest=/etc/neutron/neutron.conf
@@ -52,21 +58,17 @@
     - restart neutron network
   when: network_type == "neutron-flat" and chk_neutron_conf.rc == 1
 
-#- name: check nova_tenant_id
-#  shell: . /home/stack/admin-openrc.sh ; keystone tenant-list | grep service | awk '{print $2}'
-#  register: nova_tenant_id
-#  ignore_errors: True
-#  when: network_type == "neutron-flat"
-
-#- name: setting neutron config nova_tenant_id
-#  lineinfile:
-#    dest=/etc/neutron/neutron.conf
-#    state=present
-#    regexp='xxxx'
-#    line="nova_admin_tenant_id = {{ item }}"
-#    backup=yes
-#  with_items: nova_tenant_id.stdout_lines
-#  when: network_type == "neutron-flat"
+- name: setting neutron config for neutron l3
+  template: >
+    src=neutron.conf.j2
+    dest=/etc/neutron/neutron.conf
+    owner=neutron
+    group=neutron
+    mode=0640
+    backup=yes
+  notify:
+    - restart neutron network
+  when: network_type == "neutron-flat" and chk_neutron_conf.rc == 1
 
 - name: setting neutron l3_agent config
   template: >
@@ -78,7 +80,7 @@
     backup=yes
   notify:
     - restart neutron network
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - name: setting neutron dhcp_agent config
   template: >
@@ -90,7 +92,7 @@
     backup=yes
   notify:
     - restart neutron network
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - name: setting neutron metadata_agent config
   template: >
@@ -102,7 +104,7 @@
     backup=yes
   notify:
     - restart neutron network
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - name: setting neutron lbaas_agent config
   template: >
@@ -114,9 +116,9 @@
     backup=yes
   notify:
     - restart neutron network
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
-- name: setting neutron ml2 config
+- name: setting neutron ml2 config for neutron flat
   template: >
     src=ml2_conf.ini.j2
     dest=/etc/neutron/plugins/ml2/ml2_conf.ini
@@ -127,4 +129,16 @@
   notify:
     - restart neutron network
   when: network_type == "neutron-flat"
+
+- name: setting neutron ml2 config for neutron l3
+  template: >
+    src=ml2_conf.ini_l3.j2
+    dest=/etc/neutron/plugins/ml2/ml2_conf.ini
+    owner=root
+    group=neutron
+    mode=0640
+    backup=yes
+  notify:
+    - restart neutron network
+  when: network_type == "neutron-l3"
 

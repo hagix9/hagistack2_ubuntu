@@ -122,9 +122,9 @@ neutron_mq_password: secrete
 neutron_flat_networks:
   network01:
     name: sharednet1
-    sbunet: 192.168.10.0/24
+    subnet: 192.168.10.0/24
     ip_pool_start: 192.168.10.151
-    iP_pool_end: 192.168.10.200
+    ip_pool_end: 192.168.10.200
     dns1: 8.8.4.4
     dns2: 8.8.8.8
 secgroup_rules:

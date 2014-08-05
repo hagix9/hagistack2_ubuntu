@@ -19,12 +19,12 @@
     backup=yes
   notify:
     - restart neutron control
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - name: check nova_tenant_id
   shell: . /home/stack/admin-openrc.sh ; keystone tenant-list | grep service | awk '{print $2}'
   register: nova_tenant_id
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - name: setting neutron config nova_tenant_id
   lineinfile:
@@ -34,5 +34,5 @@
     line="nova_admin_tenant_id = {{ item }}"
     backup=yes
   with_items: nova_tenant_id.stdout_lines
-  when: network_type == "neutron-flat"
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 

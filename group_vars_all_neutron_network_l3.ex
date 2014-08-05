@@ -9,7 +9,7 @@ operate_user_password: $1$openstac$ZyvPxUXR5eJLA0ClbcZRe1
 virt_type: kvm
 
 # Proxy
-#http_proxy: http://10.10.10.10:8080/
+#http_proxy: http://10.10.10.10:8900/
 proxy_env:
   http_proxy: "{{ http_proxy }}"
   https_proxy: "{{ http_proxy }}"
@@ -117,7 +117,7 @@ neutron_keystone_password: secrete
 neutron_mq_user: neutron
 neutron_mq_password: secrete
 # For Neutron Flat
-network_type: neutron-flat
+#network_type: neutron-flat
 neutron_flat_networks:
   network01:
     name: sharednet1
@@ -140,7 +140,7 @@ secgroup_rules:
     to_port: -1
     cidr: 0.0.0.0/0
 # For Neutron L3
-#network_type: neutron-l3
+network_type: neutron-l3
 router_name: router01
 neutron_l3_internal_networks:
   internal_network01:

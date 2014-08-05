@@ -2,4 +2,5 @@
 
 - include: nova_network.yml
 - include: neutron_flat.yml
+- include: neutron_l3.yml
 

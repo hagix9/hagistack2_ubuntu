@@ -11,13 +11,12 @@ OpenStackのバージョンIcehouseをインストールするAnsibleのPlaybook
 * Novaのインストール
 * Cinderのインストール
 * Glanceへのイメージ登録
-* Neutronのインストール(FlatなL2モードのみ対応)
+* Neutronのインストール(Flat、L3モード)
 
 まだ出来ないこと
 ----------------
 早く出来るようにします。  
 
-* Neutronのインストール(L3モード)
 * Heatのインストール
 * Ceilometerのインストール(動作が怪しいので要調査)
 * Troveのインストール
@@ -212,7 +211,7 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     #network_type: nova-network
     network_type: neutron-flat
     ip_pool_start: 192.168.10.151
-    iP_pool_end: 192.168.10.200
+    ip_pool_end: 192.168.10.200
     ```
     
     3.Adminユーザのパスワード
