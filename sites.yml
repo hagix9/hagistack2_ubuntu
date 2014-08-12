@@ -125,12 +125,6 @@
   roles:
     - { role: neutron_compute, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
 
-- name: OpenStack Network Settings 
-  hosts: openstack_ctl
-  sudo: true
-  roles:
-    - { role: network_settings }
-
 - name: OpenStack Neutron Service Restart For Control
   hosts: openstack_ctl
   sudo: true
@@ -150,4 +144,10 @@
   sudo: true
   roles:
     - { role: neutron_restart_compute, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+
+- name: OpenStack Network Settings 
+  hosts: openstack_ctl
+  sudo: true
+  roles:
+    - { role: network_settings }
 
