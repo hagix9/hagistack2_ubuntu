@@ -171,26 +171,37 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     ```
     controller_int_ip: 192.168.10.50
     ```
+    2.nova-networkを利用するように設定  
+
+    network_typeを変更します。  
+    外部向けIPアドレスの範囲も設定します。  
+ 
     
-    2.インスタンスの外部接続用アドレス範囲
+    ```
+    network_type: nova-network
+    #network_type: neutron-flat
+    #network_type: neutron-l3
+    ```
+    
+    3.インスタンスの外部接続用アドレス範囲
     
     ```
     ranges: 192.168.10.112/28
     ```
     
-    3.Adminユーザのパスワード
+    4.Adminユーザのパスワード
     
     ```
     admin_password: secrete
     ```
     
-    4.一般ユーザのパスワード
+    5.一般ユーザのパスワード
     
     ```
     generic_password01: secrete
     ```
 
- 3-2. 変数の設定(Neutron Flat(L2のみ))
+ 3-2. 変数の設定(Neutron Flat(L2のみのネットワーク構成))
     
     最低限設定する必要する項目は以下です。  
     ``group_vars/all`` が変数設定のファイルです。
@@ -210,8 +221,45 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     ```
     #network_type: nova-network
     network_type: neutron-flat
+    #network_type: neutron-l3
     ip_pool_start: 192.168.10.151
     ip_pool_end: 192.168.10.200
+    ```
+    
+    3.Adminユーザのパスワード
+    
+    ```
+    admin_password: secrete
+    ```
+    
+    4.一般ユーザのパスワード
+    
+    ```
+    generic_password01: secrete
+    ```
+ 3-3. 変数の設定(Neutron L3(ルータを利用したL3ネットワーク構成))
+    
+    最低限設定する必要する項目は以下です。  
+    ``group_vars/all`` が変数設定のファイルです。
+    大体OpenStackでの設定項目と同じ変数名にしてあるつもりなので変更する場合もそんなに困らないはずです。
+    
+    1.ControllerノードのIPアドレス
+    ```
+    controller_int_ip: 192.168.10.50
+    ```
+    
+    2.neutronを利用するように設定  
+
+    network_typeを変更します。  
+    変更した行の下あたりのネットワーク設定も適宜変更してください。  
+    ``internal_network01``  側のネットワーク設定は内部接続向けのネットワークなので好きなNWセグメントを指定してください。  
+    ``external_network01``  側のネットワーク設定は外部接続向けのネットワークなのでインターネットに接続するセグメントを指定してください。  
+ 
+    
+    ```
+    #network_type: nova-network
+    #network_type: neutron-flat
+    network_type: neutron-l3
     ```
     
     3.Adminユーザのパスワード
@@ -259,22 +307,28 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     imageは ``nova image-list`` で確認できます。 
     security_groupの設定はHorizonのほうが楽かもしれません。以下のコマンドではdefaultを利用します。  
     keypairはツールでデフォルトで設定されるものを組み込みます。  
-    CentOS6.5を起動しますが利用するイメージはSELinux、SSHのログインはパスワードでのログイン不可などちょっと不便なイメージです。  
-    ツールでのデフォルトではUbuntu14.04とCentOS6.5が利用出来るようにしています。  
+    ツールでのデフォルトではUbuntu14.04を利用出来るようにしています。  
     ``roles/glance_image/vars/main.yml`` のコメントを外せば他にも利用可能なイメージがあります。  
+    ``http://docs.openstack.org/ja/image-guide/image-guide.pdf`` を参照すればイメージの作成方法が詳しく載っています。
     
     ```
-    nova boot --flavor 1 --image centos6.5 --security_group default --key-name mykey centos6.5_001
     nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --key-name mykey Ubuntu14.04_001
     ```
 
-    上記は ``nova-network`` の時の起動方法で以下は ``neutron`` の場合です。  
+    上記は ``nova-network`` の時の起動方法で以下は ``neutron`` の ``Flatネットワーク`` の場合です。  
     利用するネットワークを指定して起動します。  
 
     ```
     NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'`
     nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$NETWORK_ID --key-name mykey Ubuntu14.04_001
-    nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$NETWORK_ID --key-name mykey centos6.5_001
+    ```
+
+    最後に ``neutron`` の ``L3ネットワーク`` の場合です。  
+    利用するネットワークを指定して起動します。  
+
+    ```
+    INT_NET_ID=`neutron net-list | grep internal_network01 | awk '{ print $2 }'`
+    nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$INT_NET_ID --key-name mykey ubuntu01
     ```
     
     3.インスタンスへのログイン  
