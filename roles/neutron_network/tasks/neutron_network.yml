@@ -9,8 +9,7 @@
   shell: >
     ovs-vsctl add-br br-int
   ignore_errors: True
-  when: network_type == "neutron-flat" and br_int_exist.rc == 1
-
+  when: network_type == "neutron-flat" and br_int_exist.rc == 1 
 - name: setting openswitch add br-int for neutron-l3
   shell: >
     ovs-vsctl add-br br-int
@@ -86,6 +85,18 @@
   template: >
     src=dhcp_agent.ini.j2
     dest=/etc/neutron/dhcp_agent.ini
+    owner=root
+    group=neutron
+    mode=0640
+    backup=yes
+  notify:
+    - restart neutron network
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
+
+- name: setting dnsmasq mtu config
+  template: >
+    src=dnsmasq-neutron.conf.j2
+    dest=/etc/neutron/dnsmasq-neutron.conf
     owner=root
     group=neutron
     mode=0640
