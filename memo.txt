@@ -1,11 +1,11 @@
 export OS_USERNAME=admin
 export OS_PASSWORD=secrete
 export OS_TENANT_NAME=admin
-export OS_AUTH_URL=http://192.168.122.50:35357/v2.0/
+export OS_AUTH_URL=http://192.168.10.50:35357/v2.0/
 export PS1='\u@\h \W(keystone)\$ '
 
 #For nova-network
-
+##Network Cretate
 nova network-create            \
 nova_network1                  \
 --fixed-range-v4=10.10.10.0/24 \
@@ -13,29 +13,34 @@ nova_network1                  \
 --bridge-interface=eth0        \
 --multi-host=T
 
+#Security Group Settings
 nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 
 nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 
 
-FLOAT_IP_RANGE=192.168.122.112/28
-nova-manage floating create --ip_range=192.168.122.112/28
+#Floating IP Setting
+FLOAT_IP_RANGE=192.168.10.112/28
+nova-manage floating create --ip_range=192.168.10.112/28
 
+#Keypair Making
 cd
 nova keypair-add mykey > mykey
 chown stack:stack mykey
 chmod 600 mykey
 
+#Flavor Setting
 nova flavor-delete 1
 nova flavor-create m1.tiny 1 512 0 1
 
+#Instance Booting
 nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --key-name mykey ubuntu01
 nova boot --flavor 1 --image centos6.5 --security_group default --key-name mykey centos65_01
 nova boot --flavor 1 --image centos6.5 --security_group default --key-name mykey centos65_02
 
-nova add-floating-ip centos65_01 192.168.122.113
-nova add-floating-ip centos65_02 192.168.122.114
-nova add-floating-ip ubuntu01 192.168.122.115 
-ssh -i mykey ubuntu@192.168.122.113
-ssh -i mykey cloud-user@192.168.122.113
+nova add-floating-ip centos65_01 192.168.10.113
+nova add-floating-ip centos65_02 192.168.10.114
+nova add-floating-ip ubuntu01 192.168.10.115 
+ssh -i mykey ubuntu@192.168.10.113
+ssh -i mykey cloud-user@192.168.10.113
 
 # LXC For Nova Compute
 apt-get install lxc -y
@@ -85,12 +90,12 @@ iface eth0 inet static
 
 auto br-ex
 iface br-ex inet static
-    address 192.168.122.50
+    address 192.168.10.50
     netmask 255.255.255.0
-    network 192.168.122.0
-    gateway 192.168.122.1
-    dns-nameservers 192.168.122.1
-    broadcast 192.168.122.255
+    network 192.168.10.0
+    gateway 192.168.10.1
+    dns-nameservers 192.168.10.1
+    broadcast 192.168.10.255
     bridge_ports eth0
     bridge_stp off
 
@@ -98,12 +103,12 @@ iface br-ex inet static
 cat /etc/network/interfaces
 auto eth0
 iface eth0 inet static
-       address 192.168.122.51
+       address 192.168.10.51
        netmask 255.255.255.0
-       network 192.168.122.0
-       broadcast 192.168.122.255
-       gateway 192.168.122.1
-       dns-nameservers 192.168.122.1
+       network 192.168.10.0
+       broadcast 192.168.10.255
+       gateway 192.168.10.1
+       dns-nameservers 192.168.10.1
 
 auto  eth1
 iface eth1 inet manual
@@ -116,12 +121,98 @@ iface eth1 inet manual
 SERVICE_TENANT_ID=`keystone tenant-list | grep service | awk '{print $2}'`
 neutron net-create --tenant-id $SERVICE_TENANT_ID sharednet1 \
 --shared --provider:network_type flat --provider:physical_network physnet1
-
 neutron subnet-create \
---ip-version 4 --tenant-id $SERVICE_TENANT_ID sharednet1 192.168.122.0/24 \
---allocation-pool start=192.168.122.151,end=192.168.122.200 \
+--ip-version 4 --tenant-id $SERVICE_TENANT_ID sharednet1 192.168.10.0/24 \
+--allocation-pool start=192.168.10.151,end=192.168.10.200 \
 --dns_nameservers list=true 8.8.4.4 8.8.8.8
 
+ROUTER_ID=`neutron router-list | grep router01 | awk '{ print $2 }'` 
+INT_SUBNET_ID=`neutron net-list | grep internal_network01 | awk '{ print $6 }'`
+neutron router-interface-add $ROUTER_ID $INT_SUBNET_ID 
+neutron net-create external_network01 --router:external=True 
+neutron subnet-create --name external_subnet01 external_network01 \
+--allocation-pool start=192.168.10.151,end=192.168.10.200 \
+--gateway 192.168.10.1 --dns-nameserver 8.8.8.8 192.168.10.0/24 --disable-dhcp 
+EXT_NET_ID=`neutron net-list | grep external_network01 | awk '{ print $2 }'` 
+neutron router-gateway-set $ROUTER_ID $EXT_NET_ID 
+
+#Boot Instance For Neutron FLAT
+NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'`
+nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$NETWORK_ID --key-name mykey ubuntu01
+nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$NETWORK_ID --key-name mykey centos65_01
+
+#Neutron L3 Network
+##External Network Create
+neutron net-create external_network01 --router:external=True
+neutron subnet-create external_network01 --name external_subnet01  \
+--allocation-pool start=192.168.10.151,end=192.168.10.200 \
+--gateway 192.168.10.1 --dns-nameserver 8.8.8.8 192.168.10.0/24 --disable-dhcp
+##Internal Network Create
+neutron net-create internal_network01 
+neutron subnet-create --name internal_subnet01 \
+--gateway 10.10.10.1 --dns-nameserver 8.8.8.8 internal_network01 10.10.10.0/24 
+##Router Create
+neutron router-create router01
+##Router Interface Adding
+ROUTER_ID=`neutron router-list | grep router01 | awk '{ print $2 }'`
+INT_SUBNET_ID=`neutron net-list | grep internal_network01 | awk '{ print $6 }'`
+neutron router-interface-add $ROUTER_ID $INT_SUBNET_ID
+##Router Gateway Setting
+ROUTER_ID=`neutron router-list | grep router01 | awk '{ print $2 }'`
+EXT_NET_ID=`neutron net-list | grep external_network01 | awk '{ print $2 }'`
+neutron router-gateway-set $ROUTER_ID $EXT_NET_ID
+##Check
+ping 192.168.10.151
+
+#Neutron L3 Network Deleted
+ROUTER_ID=`neutron router-list | grep router01 | awk '{ print $2 }'`
+EXT_NET_ID=`neutron net-list | grep external_network01 | awk '{ print $2 }'`
+neutron router-gateway-clear $ROUTER_ID $EXT_NET_ID
+INT_SUBNET_ID=`neutron net-list | grep internal_network01 | awk '{ print $6 }'`
+neutron router-interface-delete $ROUTER_ID $INT_SUBNET_ID
+for i in $(neutron subnet-list | grep "}" | awk '{print $2}'); do neutron subnet-delete $i; done
+for i in $(neutron net-list | grep -v "\-\-" | grep "-" | awk '{print $2}'); do neutron net-delete $i; done
+for i in $(neutron router-list | grep -v "\-\-" | grep "-" | awk '{print $2}'); do neutron router-delete $i; done
+
+#Seurity Group Settings
+nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 
+nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 
+
+#Boot Instance For Neutron L3
+INT_NET_ID=`neutron net-list | grep internal_network01 | awk '{ print $2 }'` 
+nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$INT_NET_ID --key-name mykey ubuntu01
+nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$INT_NET_ID --key-name mykey centos65_01
+
+#Login Instance
+ip netns exec qdhcp-xxx-xxx-xx-xxx ssh -i ssh -i /home/stack/mykey ubuntu@10.10.10.2
+
+#Associate Floating IP For Neutron L3
+neutron floatingip-create external_network01
+DEVICE_ID=`nova list | grep ubuntu01 | awk '{ print $2 }'` 
+PORT_ID=`neutron port-list -- --device_id $DEVICE_ID | grep 10.10.10.2 | awk '{ print $2 }'` 
+FLOATING_ID=`neutron floatingip-list | grep 192.168.10.152 | awk '{ print $2 }'` 
+neutron floatingip-associate $FLOATING_ID $PORT_ID 
+
+#Login Instance
+ssh -i /home/stack/mykey ubuntu@192.168.10.152
+
+#Service Restart
+cd /etc/init/; for i in $(ls -1 neutron-* | cut -d \. -f 1); do sudo service $i restart; done
+cd /etc/init/; for i in $(ls -1 nova-* | cut -d \. -f 1); do sudo service $i restart; done
+
+#Check Console log
+tail -f /var/lib/nova/instances/*/console.log
+
+#Use Cloud Init
+cat << EOF > cloud.txt
+#cloud-config
+password: stack
+chpasswd: { expire: False }
+ssh_pwauth: True
+EOF
+
+
+################################
 #Neutron L3 Network
 neutron router-create router01
 neutron net-create int_net 
@@ -132,36 +223,20 @@ INT_SUBNET_ID=`neutron net-list | grep int_net | awk '{ print $6 }'`
 neutron router-interface-add $ROUTER_ID $INT_SUBNET_ID 
 neutron net-create ext_net --router:external=True 
 neutron subnet-create ext_net \
---allocation-pool start=192.168.122.151,end=192.168.122.200 \
---gateway 192.168.122.1 --dns-nameserver 8.8.8.8 192.168.122.0/24 --disable-dhcp 
+--allocation-pool start=192.168.10.151,end=192.168.10.200 \
+--gateway 192.168.10.1 --dns-nameserver 8.8.8.8 192.168.10.0/24 --disable-dhcp 
 EXT_NET_ID=`neutron net-list | grep ext_net | awk '{ print $2 }'` 
 neutron router-gateway-set $ROUTER_ID $EXT_NET_ID 
 
-#Boot Instance For Neutron FLAT
-NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'`
-nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$NETWORK_ID --key-name mykey ubuntu01
-nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$NETWORK_ID --key-name mykey centos65_01
+#Neutron L3 Network Deleted
+ROUTER_ID=`neutron router-list | grep router01 | awk '{ print $2 }'`
+EXT_NET_ID=`neutron net-list | grep ext_net | awk '{ print $2 }'`
+neutron router-gateway-clear $ROUTER_ID $EXT_NET_ID
+INT_SUBNET_ID=`neutron net-list | grep int_net | awk '{ print $6 }'`
+neutron router-interface-delete $ROUTER_ID $INT_SUBNET_ID
+for i in $(neutron subnet-list | grep "}" | awk '{print $2}'); do neutron subnet-delete $i; done
+for i in $(neutron net-list | grep -v "\-\-" | grep "-" | awk '{print $2}'); do neutron net-delete $i; done
+for i in $(neutron router-list | grep -v "\-\-" | grep "-" | awk '{print $2}'); do neutron router-delete $i; done
 
-#Boot Instance For Neutron L3
-INT_NET_ID=`neutron net-list | grep internal_network01 | awk '{ print $2 }'` 
-nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$INT_NET_ID --key-name mykey ubuntu01
-nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$INT_NET_ID --key-name mykey centos65_01
-
-#Associate Floating IP For Neutron L3
-neutron floatingip-create external_network01
-DEVICE_ID=`nova list | grep ubuntu01 | awk '{ print $2 }'` 
-PORT_ID=`neutron port-list -- --device_id $DEVICE_ID | grep 10.10.10.2 | awk '{ print $2 }'` 
-FLOATING_ID=`neutron floatingip-list | grep 192.168.122.152 | awk '{ print $2 }'` 
-neutron floatingip-associate $FLOATING_ID $PORT_ID 
-
-nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 
-nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 
-
-ssh -i mykey ubuntu@192.168.122.152
-
-#Service Restart
-cd /etc/init/; for i in $(ls -1 neutron-* | cut -d \. -f 1); do sudo service $i restart; done
-cd /etc/init/; for i in $(ls -1 nova-* | cut -d \. -f 1); do sudo service $i restart; done
-
-tail -f /var/lib/nova/instances/*/console.log
+###############################
 
