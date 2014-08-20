@@ -3,17 +3,17 @@
 - name: create router
   neutron_router: >
     state=present
-    login_username={{ admin_user }}
-    login_password={{ admin_password }}
-    login_tenant_name={{ admin_tenant }}
+    login_username={{ generic_user01 }}
+    login_password={{ generic_password01 }}
+    login_tenant_name={{ generic_tenant01 }}
     name={{ router_name }}
 
 - name: create internal network for neutron l3
   neutron_network: >
     state=present
-    login_username={{ admin_user }}
-    login_password={{ admin_password }}
-    login_tenant_name={{ admin_tenant }}
+    login_username={{ generic_user01 }}
+    login_password={{ generic_password01 }}
+    login_tenant_name={{ generic_tenant01 }}
     name={{ item.key }}
   with_dict: neutron_l3_internal_networks
   when: network_type == "neutron-l3"
@@ -21,9 +21,9 @@
 - name: create internal subnet for neutron l3
   neutron_subnet: >
     state=present
-    login_username={{ admin_user }}
-    login_password={{ admin_password }}
-    login_tenant_name={{ admin_tenant }}
+    login_username={{ generic_user01 }}
+    login_password={{ generic_password01 }}
+    login_tenant_name={{ generic_tenant01 }}
     network_name={{ item.key }}
     name={{ item.value.subnet_name }}
     cidr={{ item.value.subnet }}
@@ -35,9 +35,9 @@
 - name: create router interface add for neutron l3
   neutron_router_interface: >
     state=present
-    login_username={{ admin_user }}
-    login_password={{ admin_password }}
-    login_tenant_name={{ admin_tenant }}
+    login_username={{ generic_user01 }}
+    login_password={{ generic_password01 }}
+    login_tenant_name={{ generic_tenant01 }}
     router_name={{ router_name }}
     subnet_name={{ item.value.subnet_name }}
   with_dict: neutron_l3_internal_networks
@@ -46,9 +46,9 @@
 - name: create external network for neutron l3
   neutron_network: >
     state=present
-    login_username={{ admin_user }}
-    login_password={{ admin_password }}
-    login_tenant_name={{ admin_tenant }}
+    login_username={{ generic_user01 }}
+    login_password={{ generic_password01 }}
+    login_tenant_name={{ generic_tenant01 }}
     name={{ item.key }}
     router_external=yes
   with_dict: neutron_l3_external_networks
@@ -57,9 +57,9 @@
 - name: create external subnet for neutron l3
   neutron_subnet: >
     state=present
-    login_username={{ admin_user }}
-    login_password={{ admin_password }}
-    login_tenant_name={{ admin_tenant }}
+    login_username={{ generic_user01 }}
+    login_password={{ generic_password01 }}
+    login_tenant_name={{ generic_tenant01 }}
     network_name={{ item.key }}
     name={{ item.value.subnet_name }}
     cidr={{ item.value.subnet }}
@@ -74,9 +74,9 @@
 - name: create router gateway set for neutron l3
   neutron_router_gateway: >
     state=present
-    login_username={{ admin_user }}
-    login_password={{ admin_password }}
-    login_tenant_name={{ admin_tenant }}
+    login_username={{ generic_user01 }}
+    login_password={{ generic_password01 }}
+    login_tenant_name={{ generic_tenant01 }}
     network_name={{ item.key }}
     router_name={{ router_name }}
   with_dict: neutron_l3_external_networks
@@ -84,7 +84,7 @@
 
 - name: secgroup settings
   shell: >
-    . {{ operate_user_home }}/admin-openrc.sh ; nova secgroup-add-rule
+    . {{ operate_user_home }}/generic01-openrc.sh ; nova secgroup-add-rule
     {{ item.value.name }}
     {{ item.value.protocol }}
     {{ item.value.from_port }}

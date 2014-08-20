@@ -34,7 +34,7 @@
 
 - name: create keypair
   shell: >
-    . {{ operate_user_home }}/admin-openrc.sh ; nova keypair-add {{ keypaire_name }} > {{ operate_user_home }}/{{ keypaire_name }}
+    . {{ operate_user_home }}/generic01-openrc.sh ; nova keypair-add {{ keypaire_name }} > {{ operate_user_home }}/{{ keypaire_name }}
   ignore_errors: True
   when: exist_keypair.rc == 2
 

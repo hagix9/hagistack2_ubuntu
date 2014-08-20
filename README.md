@@ -62,8 +62,11 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     vi /etc/network/interfaces
 
     auto eth0
-    iface eth0 inet static
-        address 0.0.0.0
+        iface eth0 inet manual
+        up ifconfig $IFACE 0.0.0.0 up
+        up ip link set eth0 promisc on
+        down ip link set eth0 promisc off
+        down ifconfig eth0 down
     
     auto br-ex
     iface br-ex inet static
@@ -80,9 +83,10 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
  3. NIC複数枚でNeutronを利用する場合のインターフェース設定
 
     OpenVswitchの設定は先にしておく必要がありませんがツールがまだ対応していないので今のところは先に設定しておきます。  
-    ``br-ex`` と対応付ける ``eth1`` はインターネットなどに出て行く外部インターフェースを指定します。  
+    ``br-ex`` と対応付ける ``eth0`` はインターネットなどに出て行く外部インターフェースを指定します。  
     外部インターフェースはインターフェースが起動する設定だけしておきます。  
-    ここでは ``eth1`` になっています。  
+    ここでは ``eth0`` になっています。  
+    ``br-int`` は仮想マシン同士が利用するネットワークです。Neutronの ``ml2_conf.ini`` で設定したIPのインターフェースで利用されます。
 
     ```
     apt-get install openvswitch-switch -y
@@ -91,8 +95,16 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     ovs-vsctl add-port br-ex eth0
 
     vi /etc/network/interfaces
-    auto eth0
-    iface eth0 inet static
+
+    auto  eth0
+    iface eth1 inet manual
+            up   ifconfig $IFACE 0.0.0.0 up
+            up   ip link set $IFACE promisc on
+            down ip link set $IFACE promisc off
+            down ifconfig $IFACE down
+
+    auto eth1
+    iface eth1 inet static
            address 192.168.10.51
            netmask 255.255.255.0
            network 192.168.10.0
@@ -100,12 +112,6 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
            gateway 192.168.10.1
            dns-nameservers 192.168.10.1
     
-    auto  eth1
-    iface eth1 inet manual
-            up   ifconfig $IFACE 0.0.0.0 up
-            up   ip link set $IFACE promisc on
-            down ip link set $IFACE promisc off
-            down ifconfig $IFACE down
 
     ```
 
@@ -298,7 +304,7 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     ```
     ssh ControlサーバのIP
     su - stack
-    . generic01-openrc.sh
+    . ./generic01-openrc.sh
     ```
     
     2.インスタンスの起動
