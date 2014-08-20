@@ -62,12 +62,10 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
     vi /etc/network/interfaces
 
     auto eth0
-        iface eth0 inet manual
-        up ifconfig $IFACE 0.0.0.0 up
-        up ip link set eth0 promisc on
-        down ip link set eth0 promisc off
-        down ifconfig eth0 down
-    
+    iface eth0 inet manual
+        up ip link set dev $IFACE up
+        down ip link set dev $IFACE down
+
     auto br-ex
     iface br-ex inet static
         address 192.168.10.50
@@ -76,8 +74,6 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
         gateway 192.168.10.1
         dns-nameservers 192.168.10.1
         broadcast 192.168.10.255
-        bridge_ports eth0
-        bridge_stp off
     ```
 
  3. NIC複数枚でNeutronを利用する場合のインターフェース設定
@@ -96,22 +92,20 @@ Ubuntu12.04の場合はリポジトリを追加するようにしています。
 
     vi /etc/network/interfaces
 
-    auto  eth0
-    iface eth1 inet manual
-            up   ifconfig $IFACE 0.0.0.0 up
-            up   ip link set $IFACE promisc on
-            down ip link set $IFACE promisc off
-            down ifconfig $IFACE down
+    auto eth0
+    iface eth0 inet manual
+        up ip link set dev $IFACE up
+        down ip link set dev $IFACE down
+
 
     auto eth1
     iface eth1 inet static
-           address 192.168.10.51
-           netmask 255.255.255.0
-           network 192.168.10.0
-           broadcast 192.168.10.255
-           gateway 192.168.10.1
-           dns-nameservers 192.168.10.1
-    
+        address 192.168.10.51
+        netmask 255.255.255.0
+        network 192.168.10.0
+        broadcast 192.168.10.255
+        gateway 192.168.10.1
+        dns-nameservers 192.168.10.1
 
     ```
 

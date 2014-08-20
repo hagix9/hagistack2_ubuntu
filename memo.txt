@@ -85,10 +85,8 @@ cat /etc/network/interfaces
 
 auto eth0
 iface eth0 inet manual
-    up   ifconfig $IFACE 0.0.0.0 up
-    up   ip link set $IFACE promisc on
-    down ip link set $IFACE promisc off
-    down ifconfig $IFACE down
+    up ip link set dev $IFACE up
+    down ip link set dev $IFACE down
 
 auto br-ex
 iface br-ex inet static
@@ -98,8 +96,6 @@ iface br-ex inet static
     gateway 192.168.10.1
     dns-nameservers 192.168.10.1
     broadcast 192.168.10.255
-    bridge_ports eth0
-    bridge_stp off
 
 #Two NIC
 cat /etc/network/interfaces
@@ -114,10 +110,8 @@ iface eth0 inet static
 
 auto  eth1
 iface eth1 inet manual
-    up   ifconfig $IFACE 0.0.0.0 up
-    up   ip link set $IFACE promisc on
-    down ip link set $IFACE promisc off
-    down ifconfig $IFACE down
+    up ip link set dev $IFACE up
+    down ip link set dev $IFACE down
 
 #Neutron Flat Network
 SERVICE_TENANT_ID=`keystone tenant-list | grep service | awk '{print $2}'`
