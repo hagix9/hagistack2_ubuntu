@@ -129,6 +129,18 @@
     - restart neutron network
   when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
+- name: setting neutron fwaas_agent config
+  template: >
+    src=fwaas_driver.ini.j2
+    dest=/etc/neutron/fwaas_driver.ini
+    owner=root
+    group=neutron
+    mode=0640
+    backup=yes
+  notify:
+    - restart neutron network
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
+
 - name: setting neutron ml2 config for neutron flat
   template: >
     src=ml2_conf.ini.j2
@@ -152,4 +164,10 @@
   notify:
     - restart neutron network
   when: network_type == "neutron-l3"
+
+- name: setting openswitch add br-int for neutron-l3
+  shell: >
+    /usr/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf \
+                               --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade juno
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 

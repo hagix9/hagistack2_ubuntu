@@ -70,9 +70,7 @@ flat_injected=false
 auth_strategy=keystone
 [keystone_authtoken]
 auth_uri=http://{{ controller_int_ip }}:5000
-auth_host={{ controller_int_ip }}
-auth_port=35357
-auth_protocol=http
+identity_uri=http://{{ controller_int_ip }}:5000
 admin_tenant_name=service
 admin_user=nova
 admin_password={{ nova_keystone_password }}

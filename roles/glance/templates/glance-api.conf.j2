@@ -645,7 +645,8 @@ connection = mysql://glance:{{ mysql_glance_password }}@{{ controller_int_ip }}/
 #db_max_retries = 20
 
 [keystone_authtoken]
-auth_uri = http://{{ controller_int_ip }}:5000
+identity_uri = http://{{ controller_int_ip }}:5000
+auth_uri = http://{{ controller_int_ip }}:5000/v2.0
 auth_host = {{ controller_int_ip }}
 auth_port = 35357
 auth_protocol = http

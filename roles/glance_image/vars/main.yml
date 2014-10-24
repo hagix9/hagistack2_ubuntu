@@ -44,9 +44,13 @@ glance_direct_images:
 #    url: http://cloud-images.ubuntu.com/releases/13.10/release
 #    filename: ubuntu-13.10-server-cloudimg-amd64-disk1.img
 #    format: qcow2
-  - name: ubuntu-14.04-x86_64
-    url: http://cloud-images.ubuntu.com/releases/14.04/release/ubuntu-14.04-server-cloudimg-amd64-disk1.img
-    filename: ubuntu-14.04-server-cloudimg-amd64-disk1.img
+#  - name: ubuntu-14.04-x86_64
+#    url: http://cloud-images.ubuntu.com/releases/14.04/release/ubuntu-14.04-server-cloudimg-amd64-disk1.img
+#    filename: ubuntu-14.04-server-cloudimg-amd64-disk1.img
+#    format: qcow2
+  - name: ubuntu-14.10-x86_64
+    url: http://cloud-images.ubuntu.com/releases/14.10/release/ubuntu-14.10-server-cloudimg-amd64-disk1.img
+    filename: ubuntu-14.10-server-cloudimg-amd64-disk1.img
     format: qcow2
 #  - name: centos6.5
 #    url: http://repos.fedorapeople.org/repos/openstack/guest-images/centos-6.5-20140117.0.x86_64.qcow2

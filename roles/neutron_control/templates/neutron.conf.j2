@@ -39,14 +39,12 @@ nova_admin_auth_url = http://{{ controller_int_ip }}:35357/v2.0
 root_helper = sudo /usr/bin/neutron-rootwrap /etc/neutron/rootwrap.conf
 
 [keystone_authtoken]
-auth_host={{ controller_int_ip }}
-auth_port=35357
-auth_protocol=http
+identity_uri = http://{{ controller_int_ip }}:5000
+auth_uri = http://{{ controller_int_ip }}:5000
 admin_tenant_name=service
 admin_user=nova
 admin_password={{ neutron_keystone_password }}
 signing_dir = $state_path/keystone-signing
-auth_uri = http://{{ controller_int_ip }}:5000
 
 [database]
 connection=mysql://neutron:{{ mysql_neutron_password }}@{{ controller_int_ip }}/neutron
@@ -54,5 +52,6 @@ connection=mysql://neutron:{{ mysql_neutron_password }}@{{ controller_int_ip }}/
 [service_providers]
 service_provider=LOADBALANCER:Haproxy:neutron.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
 service_provider=VPN:openswan:neutron.services.vpn.service_drivers.ipsec.IPsecVPNDriver:default
+service_provider=FIREWALL:Iptables:neutron.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver
 
 ### FOR_CHK ###
