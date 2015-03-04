@@ -1,7 +1,6 @@
 hagistack2 for ubuntu
 =====================
 OpenStackのバージョンIcehouseをインストールするAnsibleのPlaybookです。  
-今はnova-networkにしか対応していないのでNeutronを利用するのは無理です。  
 また、外部ライブラリにopenstack-ansible-modules( https://github.com/lorin/openstack-ansible-modules )を利用しています。
 
 出来ること
@@ -22,7 +21,7 @@ OpenStackのバージョンIcehouseをインストールするAnsibleのPlaybook
 * Troveのインストール
 * CinderのバックエンドのNFS対応
 * Cinderのループバックデバイス対応(今はVGとしてVolume用サーバに ``cinder-volumes`` が作成されている前提)
-* ComputeのKVM以外のバックエンド対応(LXC、Qemu)
+* ComputeのKVM以外のバックエンド対応(LXC)
 * コンポーネント毎のログ出力設定(debug,verbose)
 * Glanceへ登録する他イメージ対応(CoreOSくらいは)
 * 各コンポーネントのDBシンク実行時のライブラリ利用
