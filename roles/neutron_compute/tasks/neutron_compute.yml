@@ -23,6 +23,7 @@
     state=installed
   with_items:
     - "neutron-common"
+    - "neutron-l3-agent"
     - "neutron-plugin-ml2"
     - "neutron-plugin-openvswitch-agent"
   when: network_type == "neutron-flat" or network_type == "neutron-l3"
@@ -56,6 +57,18 @@
     - restart neutron compute
   when: network_type == "neutron-l3" and chk_neutron_conf.rc == 1
 
+- name: setting neutron config for neutron l3
+  template: >
+    src=l3_agent.ini.j2
+    dest=/etc/neutron/l3_agent.ini
+    owner=neutron
+    group=neutron
+    mode=0640
+    backup=yes
+  notify:
+    - restart neutron compute
+  when: network_type == "neutron-l3" and chk_neutron_conf.rc == 1
+
 - name: setting neutron ml2 config for neutron flat
   template: >
     src=ml2_conf.ini.j2
@@ -80,3 +93,14 @@
     - restart neutron compute
   when: network_type == "neutron-l3"
 
+- name: setting neutron fwaas_agent config
+  template: >
+    src=fwaas_driver.ini.j2
+    dest=/etc/neutron/fwaas_driver.ini
+    owner=root
+    group=neutron
+    mode=0640
+    backup=yes
+  notify:
+    - restart neutron network
+  when: network_type == "neutron-l3"
