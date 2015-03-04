@@ -1,4 +1,6 @@
 ---
+- name: pause 5 minutes
+  pause: minutes=5
 
 - name: create router
   neutron_router: >
