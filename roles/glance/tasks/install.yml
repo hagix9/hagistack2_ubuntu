@@ -1,9 +1,10 @@
 ---
 
-- name: install glance
+- name: install glance pkgs
   apt: >
-    pkg=glance
+    name={{ item }}
     state=installed
+  with_items: glance_pkgs
 
 - name: setting glance registry config
   template: >
@@ -14,8 +15,8 @@
     mode=0644
     backup=yes
   notify: 
-    - restart glance-api
     - restart glance-registry
+    - restart glance-api
 
 - name: setting glance api config
   template: >
@@ -26,9 +27,12 @@
     mode=0644
     backup=yes
   notify: 
-    - restart glance-api
     - restart glance-registry
+    - restart glance-api
 
 - name: glance db sync
   command: /usr/bin/glance-manage db_sync
+  become: yes
+  become_user: glance
+
 

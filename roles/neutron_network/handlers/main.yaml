@@ -6,6 +6,7 @@
     - "neutron-lbaas-agent"
     - "neutron-plugin-openvswitch-agent"
     - "neutron-dhcp-agent"
+    - "neutron-metering-agent"
 
 - name: reflect setting of kernel
   shell: sysctl -p

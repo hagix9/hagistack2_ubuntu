@@ -2,11 +2,11 @@
   service: name={{ item }} state=restarted
   with_items:
     - "nova-api"
-    - "nova-conductor"
-    - "nova-scheduler"
-    - "nova-objectstore"
     - "nova-cert"
+    - "nova-conductor"
     - "nova-consoleauth"
+    - "nova-spiceproxy"
+    - "nova-scheduler"
 
 - name: restart nova-network
   service: name=nova-network state=restarted

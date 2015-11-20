@@ -1,14 +1,19 @@
 ---
 
-- name: install keystone
+- name: install keystone pkgs
   apt: >
-    pkg=keystone
+    name={{ item }}
     state=installed
+  with_items: keystone_pkgs
 
-- name: delete sqlite database
-  file: >
-    dest=/var/lib/keystone/keystone.db
-    state=absent
+- name: keystone stopped
+  service: >
+    name=keystone
+    state=stopped
+    enabled=no
+
+- name: invalid automatic execution
+  shell: echo "manual" > /etc/init/keystone.override
 
 - name: setting keystone config
   template: >
@@ -18,11 +23,47 @@
     group=keystone
     mode=0644
     backup=yes
-  notify: restart keystone
+  notify: restart apache2
 
-- name: keystone setup
-  command: /usr/bin/keystone-manage pki_setup --keystone-user keystone --keystone-group keystone
-  command: /usr/bin/keystone-manage db_sync
+- name: setting apache2 config
+  template: >
+    src=apache2.conf.j2
+    dest=/etc/apache2/apache2.conf
+    owner=root
+    group=root
+    mode=0644
+    backup=yes
+  notify: restart apache2
+
+- name: setting wsgi config
+  template: >
+    src=wsgi-keystone.conf.j2
+    dest=/etc/apache2/sites-available/wsgi-keystone.conf
+    owner=root
+    group=root
+    mode=0644
+    backup=yes
+  notify: restart apache2
+
+- name: 
+  file: >
+    src=/etc/apache2/sites-available/wsgi-keystone.conf
+    dest=/etc/apache2/sites-enabled/wsgi-keystone.conf
+    state=link
+  notify: restart apache2
+
+
+
+- name: keystone setup1
+  shell: /usr/bin/keystone-manage pki_setup --keystone-user keystone --keystone-group keystone
+  become: yes
+  become_user: keystone
+
+- name: keystone setup2
+  shell: /usr/bin/keystone-manage db_sync
+  become: yes
+  become_user: keystone
+
 
 - name: keystone pki file authority change
   file: >
@@ -31,4 +72,8 @@
     group=keystone
     mode=770
 
+- name: delete sqlite database
+  file: >
+    dest=/var/lib/keystone/keystone.db
+    state=absent
 

@@ -10,7 +10,7 @@
   mysql_user: >
     name=nova
     host={{ item }}
-    password={{ mysql_nova_password }}
+    password={{ mariadb_nova_password }}
     priv=nova.*:ALL
   with_items: 
     - '%'

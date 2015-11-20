@@ -1,0 +1,31 @@
+---
+
+- name: install mongodb pkg
+  apt: >
+    name={{ item }}
+    state=present
+  with_items: mongodb_server_pkgs
+
+- name: set mongodb.cnf
+  template: >
+    src=mongodb.conf.j2
+    dest=/etc/mongodb.conf
+    owner=root
+    group=root
+    mode=0644
+  notify:
+    - restart mongodb
+
+- shell: ls /var/lib/mongodb/journal/prealloc*
+  register: jarnal_file_cleanup
+  ignore_errors: yes
+
+- file: name={{item}} state=absent
+  with_items: jarnal_file_cleanup.stdout_lines
+
+- name: start mongodb
+  service: >
+    name=mongodb
+    state=started enabled=yes
+
+

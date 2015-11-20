@@ -1,21 +1,3 @@
-tenants:
-  - name: "{{ admin_tenant }}"
-    description: "Admin Tenant"
-  - name: "{{ generic_tenant01 }}"
-    description: "Generic Tenant01"
-  - name: service
-    description: "Service Tenant"
-
-users:
-  - name: "{{ admin_user }}"
-    password: "{{admin_password }}"
-    tenant: "{{ admin_tenant }}"
-    role: "admin"
-  - name: "{{ generic_user01 }}"
-    password: "{{ generic_password01 }}"
-    tenant: "{{ generic_tenant01 }}"
-    role: "{{ generic_role01 }}"
-
 services:
   - name: keystone
     type: identity
@@ -23,4 +5,28 @@ services:
     public_url: http://{{ controller_ext_ip }}:5000/v2.0
     internal_url: http://{{ controller_int_ip }}:5000/v2.0
     admin_url: http://{{ controller_int_ip }}:35357/v2.0
+    os_url: http://{{ controller_int_ip }}:35357/v3
+
+projects:
+  - name: "{{ admin_project }}"
+    description: "Admin Project"
+    os_url: http://{{ controller_int_ip }}:35357/v3
+  - name: "{{ generic_project01 }}"
+    description: "Generic Project01"
+    os_url: http://{{ controller_int_ip }}:35357/v3
+  - name: service
+    description: "Service Project"
+    os_url: http://{{ controller_int_ip }}:35357/v3
+
+users:
+  - name: "{{ admin_user }}"
+    password: "{{admin_password }}"
+    project_name: "{{ admin_project }}"
+    role_name: "admin"
+    os_url: http://{{ controller_int_ip }}:35357/v3
+  - name: "{{ generic_user01 }}"
+    password: "{{ generic_password01 }}"
+    project_name: "{{ generic_project01 }}"
+    role_name: "{{ generic_role01 }}"
+    os_url: http://{{ controller_int_ip }}:35357/v3
 

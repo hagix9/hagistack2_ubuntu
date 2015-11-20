@@ -27,7 +27,7 @@ host=0.0.0.0
 
 [database]
 backend=sqlalchemy
-connection=mysql://ceilometer:{{ mysql_ceilometer_password }}@{{ controller_int_ip }}/ceilometer
+connection=mysql://ceilometer:{{ mariadb_ceilometer_password }}@{{ controller_int_ip }}/ceilometer
 
 [keystone_authtoken]
 auth_uri = http://{{ controller_int_ip }}:5000

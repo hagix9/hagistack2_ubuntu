@@ -10,7 +10,7 @@
   mysql_user: >
     name=ceilometer
     host={{ item }}
-    password={{ mysql_ceilometer_password }}
+    password={{ mariadb_ceilometer_password }}
     priv=ceilometer.*:ALL
   with_items: 
     - '%'

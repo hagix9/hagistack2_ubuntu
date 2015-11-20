@@ -1,9 +1,5 @@
 ---
 
-service_users:
-  - name: neutron
-    password: "{{ neutron_keystone_password }}"
-
 services:
   - name: neutron
     type: network
@@ -11,4 +7,10 @@ services:
     public_url: http://{{ controller_ext_ip }}:9696/
     internal_url: http://{{ controller_int_ip }}:9696/
     admin_url: http://{{ controller_int_ip }}:9696/
+    os_url: http://{{ controller_int_ip }}:35357/v3
+
+users:
+  - name: neutron
+    password: "{{ neutron_keystone_password }}"
+    os_url: http://{{ controller_int_ip }}:35357/v3
 

@@ -1,0 +1,17 @@
+---
+
+- name: install chrony
+  apt: pkg=chrony state=installed
+
+- name: setting chrony config
+  template: >
+    src=chrony.conf.j2
+    dest=/etc/chrony/chrony.conf
+    owner=root
+    group=root
+    mode=0644
+    backup=yes
+  notify: restart chrony
+
+- name: start chrony service
+  service: name=chrony state=started enabled=yes

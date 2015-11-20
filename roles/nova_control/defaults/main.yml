@@ -1,13 +1,16 @@
 ---
 
-service_users:
-  - name: nova
-    password: "{{ nova_keystone_password }}"
-
 services:
   - name: nova
     type: compute
-    description: "Nova Compute Service"
+    description: "OpenStack Compute Service"
     public_url: http://{{ controller_ext_ip }}:8774/v2/%(tenant_id)s
     internal_url: http://{{ controller_int_ip }}:8774/v2/%(tenant_id)s
     admin_url: http://{{ controller_int_ip }}:8774/v2/%(tenant_id)s
+    os_url: http://{{ controller_int_ip }}:35357/v3
+
+users:
+  - name: nova
+    password: "{{ nova_keystone_password }}"
+    os_url: http://{{ controller_int_ip }}:35357/v3
+

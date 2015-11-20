@@ -9,7 +9,7 @@
    - "neutron-plugin-ml2"
    - "python-neutronclient"
 
-- name: setting neutron config
+- name: setting neutron server config
   template: >
     src=neutron.conf.j2
     dest=/etc/neutron/neutron.conf
@@ -21,18 +21,40 @@
     - restart neutron control
   when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
-- name: check nova_tenant_id
-  shell: . /home/stack/admin-openrc.sh ; keystone tenant-list | grep service | awk '{print $2}'
-  register: nova_tenant_id
+- name: setting neutron ml2 config
+  template: >
+    src=ml2_conf.ini_l3.j2
+    dest=/etc/neutron/plugins/ml2/ml2_conf.ini
+    owner=root
+    group=neutron
+    mode=0644
+    backup=yes
+  notify:
+    - restart neutron control
   when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
-- name: setting neutron config nova_tenant_id
-  lineinfile:
-    dest=/etc/neutron/neutron.conf
-    state=present
-    regexp='xxxx'
-    line="nova_admin_tenant_id = {{ item }}"
-    backup=yes
-  with_items: nova_tenant_id.stdout_lines
+- name: neutron setup
+  shell: >
+    /usr/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf \
+                               --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
+  become: yes
+  become_user: neutron
+  notify:
+    - restart neutron control
   when: network_type == "neutron-flat" or network_type == "neutron-l3"
+
+#- name: check nova_tenant_id
+#  shell: . /home/stack/admin-openrc.sh ; openstack project list | grep service | awk '{print $2}'
+#  register: nova_tenant_id
+#  when: network_type == "neutron-flat" or network_type == "neutron-l3"
+
+#- name: setting neutron config nova_tenant_id
+#  lineinfile:
+#    dest=/etc/neutron/neutron.conf
+#    state=present
+#    regexp='xxxx'
+#    line="nova_admin_tenant_id = {{ item }}"
+#    backup=yes
+#  with_items: nova_tenant_id.stdout_lines
+#  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 

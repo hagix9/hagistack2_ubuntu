@@ -1,7 +1,10 @@
 ---
 
-- name: install memcached
-  apt: pkg=memcached state=installed
+- name: install memcached pkg
+  apt: >
+    name={{ item }}
+    state=installed
+  with_items: memcached_pkgs
 
 - name: setting memcached config
   template: >

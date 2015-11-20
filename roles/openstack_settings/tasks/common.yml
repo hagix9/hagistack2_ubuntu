@@ -1,31 +1,5 @@
 ---
 
-- name: create a user to use the openstack
-  user: >
-    name={{ operate_user }}
-    home={{ operate_user_home }}
-    password={{ operate_user_password }}
-    shell=/bin/bash
-    state=present
-    append=yes
-    groups=sudo
-
-- name: distribute openrc for admin
-  template: >
-    src=admin-openrc.sh.j2
-    dest={{ operate_user_home }}/admin-openrc.sh
-    owner={{ operate_user }}
-    group={{ operate_user }}
-    mode=0600
-
-- name: distribute openrc for generic01
-  template: >
-    src=generic01-openrc.sh.j2
-    dest={{ operate_user_home }}/generic01-openrc.sh
-    owner={{ operate_user }}
-    group={{ operate_user }}
-    mode=0600
-
 - command: >
     ls {{ operate_user_home }}/{{ keypaire_name }}
   register: exist_keypair

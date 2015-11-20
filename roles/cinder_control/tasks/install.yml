@@ -34,4 +34,7 @@
 
 - name: cinder db sync
   command: /usr/bin/cinder-manage db sync
+  become: yes
+  become_user: cinder
+
 

@@ -10,7 +10,7 @@
   mysql_user: >
     name=keystone
     host={{ item }}
-    password={{ mysql_keystone_password }}
+    password={{ mariadb_keystone_password }}
     priv=keystone.*:ALL
   with_items: 
     - '%'

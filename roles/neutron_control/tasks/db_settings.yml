@@ -10,7 +10,7 @@
   mysql_user: >
     name=neutron
     host={{ item }}
-    password={{ mysql_neutron_password }}
+    password={{ mariadb_neutron_password }}
     priv=neutron.*:ALL
   with_items: 
     - '%'

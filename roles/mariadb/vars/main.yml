@@ -1,0 +1,4 @@
+mariadb_server_pkgs:
+  - mariadb-server
+  - python-pymysql
+  - python-mysqldb

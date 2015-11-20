@@ -10,7 +10,7 @@
   mysql_user: >
     name=cinder
     host={{ item }}
-    password={{ mysql_cinder_password }}
+    password={{ mariadb_cinder_password }}
     priv=cinder.*:ALL
   with_items: 
     - '%'

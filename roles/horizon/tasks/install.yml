@@ -3,10 +3,9 @@
 - name: install horizon use spice
   apt: >
     pkg={{ item }}
-    state=installed
+    state=present
   with_items:
    - openstack-dashboard
-   - nova-spiceproxy
 
 #- name: install horizon use novnc
 #  apt: >
@@ -14,7 +13,6 @@
 #    state=installed
 #  with_items:
 #   - openstack-dashboard
-#   - nova-novncproxy
 
 - name: delete ubuntu theme
   apt: >

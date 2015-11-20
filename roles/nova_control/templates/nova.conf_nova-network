@@ -35,7 +35,7 @@ scheduler_driver=nova.scheduler.filter_scheduler.FilterScheduler
 glance_host={{ controller_int_ip }}
 glance_port=9292
 glance_protocol=http
-rpc_backend=nova.openstack.common.rpc.impl_kombu
+rpc_backend=rabbit
 notification_driver=nova.openstack.common.notifier.rpc_notifier
 
 # MEMCACHED
@@ -77,7 +77,7 @@ admin_password={{ nova_keystone_password }}
 
 # DATABASE
 [database]
-connection=mysql://nova:{{ mysql_nova_password }}@{{ controller_int_ip }}/nova
+connection=mysql+pymysql://nova:{{ mariadb_nova_password }}@{{ controller_int_ip }}/nova
 
 # SPICE CONSOLE
 [spice]

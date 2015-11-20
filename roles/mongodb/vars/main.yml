@@ -1,0 +1,4 @@
+mongodb_server_pkgs:
+  - mongodb-server 
+  - mongodb-clients
+  - python-pymongo

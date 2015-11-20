@@ -1,2 +1,5 @@
----
+glance_pkgs:
+  - glance
+  - python-glanceclient
+  - python-swiftclient
 

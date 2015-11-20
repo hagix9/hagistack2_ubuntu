@@ -1,6 +1,6 @@
 ---
 
-- name: install nova
+- name: install nova pkgs
   apt: >
     pkg={{ item }}
     state=installed

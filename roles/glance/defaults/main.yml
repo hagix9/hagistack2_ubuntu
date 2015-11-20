@@ -1,12 +1,17 @@
-service_users:
-  - name: glance
-    password: "{{ glance_keystone_password }}"
+---
 
 services:
   - name: glance
     type: image
-    description: "Glance Image Service"
+    description: "OpenStack Image Service"
     public_url: http://{{ controller_ext_ip }}:9292
     internal_url: http://{{ controller_int_ip }}:9292
     admin_url: http://{{ controller_int_ip }}:9292
+    os_url: http://{{ controller_int_ip }}:35357/v3
+
+users:
+  - name: glance
+    password: "{{ glance_keystone_password }}"
+    os_url: http://{{ controller_int_ip }}:35357/v3
+
 

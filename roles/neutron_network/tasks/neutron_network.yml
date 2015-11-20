@@ -23,7 +23,9 @@
   with_items:
     - "neutron-l3-agent"
     - "neutron-dhcp-agent"
+    - "neutron-vpn-agent"
     - "neutron-metadata-agent"
+    - "neutron-metering-agent"
     - "neutron-lbaas-agent"
     - "neutron-plugin-openvswitch-agent"
   when: network_type == "neutron-flat" or network_type == "neutron-l3"
@@ -117,6 +119,18 @@
     - restart neutron network
   when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
+- name: setting neutron metering config
+  template: >
+    src=metering_agent.ini.j2
+    dest=/etc/neutron/metering_agent.ini
+    owner=root
+    group=root
+    mode=0644
+    backup=yes
+  notify:
+    - restart neutron network
+  when: network_type == "neutron-flat" or network_type == "neutron-l3"
+
 - name: setting neutron lbaas_agent config
   template: >
     src=lbaas_agent.ini.j2
@@ -168,6 +182,8 @@
 - name: setting openswitch add br-int for neutron-l3
   shell: >
     /usr/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf \
-                               --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade juno
+                               --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
+  notify:
+    - restart neutron network
   when: network_type == "neutron-flat" or network_type == "neutron-l3"
 

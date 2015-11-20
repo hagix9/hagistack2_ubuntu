@@ -28,16 +28,16 @@ ntp_servers:
 controller_ext_ip: 192.168.10.50
 controller_int_ip: 192.168.10.50
 
-# MySQL Options
-mysql_root_password: root
+# MariaDB Options
+mariadb_root_password: root
 
 # Keystone Options
-mysql_keystone_password: password
+mariadb_keystone_password: password
 admin_token: ADMIN
-cert_subject_cn: JP
+cert_subject_c: JP
 cert_subject_st: Tokyo
-cert_subject_ln: Chiyoda
-cert_subject_on: openstack
+cert_subject_l: Chiyoda
+cert_subject_o: openstack
 cert_subject_cn: openstack.server
 admin_tenant: admin
 admin_user: admin
@@ -49,7 +49,7 @@ generic_role01: admin
 #generic_role01: Member
 
 # Glance Options
-mysql_glance_password: password
+mariadb_glance_password: password
 glance_keystone_password: secrete
 glance_mq_user: glance
 glance_mq_password: secrete
@@ -59,14 +59,14 @@ glance_image_tmp_dir: /opt/openstack/images
 #cirros_password: test
 
 # Nova Options
-mysql_nova_password: password
+mariadb_nova_password: password
 nova_keystone_password: secrete
 nova_mq_user: nova
 nova_mq_password: secrete
 
 # Ceilometer Options
 use_ceilometer: not_use
-mysql_ceilometer_password: password
+mariadb_ceilometer_password: password
 ceilometer_keystone_password: secrete
 ceilometer_mq_user: ceilometer
 ceilometer_mq_password: secrete
@@ -74,7 +74,7 @@ metering_secret: secrete
 
 # Cinder Options
 use_cinder: use
-mysql_cinder_password: password
+mariadb_cinder_password: password
 cinder_keystone_password: secrete
 cinder_mq_user: cinder
 cinder_mq_password: secrete
@@ -114,7 +114,7 @@ float_ip_ranges:
 # Network(for neutron)
 #network_type: neutron-l3
 network_type: neutron-flat
-mysql_neutron_password: password
+mariadb_neutron_password: password
 neutron_keystone_password: secrete
 neutron_mq_user: neutron
 neutron_mq_password: secrete
