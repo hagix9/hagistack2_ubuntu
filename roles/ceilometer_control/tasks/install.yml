@@ -6,7 +6,6 @@
     state=installed
   with_items:
    - "ceilometer-api"
-   - "ceilometer-api"
    - "ceilometer-collector"
    - "ceilometer-agent-central"
    - "ceilometer-agent-notification"
@@ -26,4 +25,6 @@
 
 - name: ceilometer db sync
   command: /usr/bin/ceilometer-dbsync
+  become: yes
+  become_user: ceilometer
 

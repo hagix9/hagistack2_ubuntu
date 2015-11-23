@@ -1,36 +1,25 @@
 [DEFAULT]
-rootwrap_config = /etc/cinder/rootwrap.conf
-api_paste_confg = /etc/cinder/api-paste.ini
-#iscsi_helper = tgtadm
-volume_name_template = volume-%s
-#volume_group = {{ cinder_vg_name }}
 verbose = {{ log_verbose }}
-auth_strategy = keystone
-state_path = /var/lib/cinder
-lock_path = /var/lock/cinder
-volumes_dir = /var/lib/cinder/volumes
 my_ip = {{ ansible_ssh_host }}
+state_path = /var/lib/cinder
+api_paste_confg = api-paste.ini
+enable_v1_api = True
+enable_v2_api = True
+osapi_volume_listen = 0.0.0.0
+osapi_volume_listen_port = 8776
+auth_strategy = keystone
+rpc_backend = rabbit
+notification_driver = cinder.openstack.common.notifier.rpc_notifier
+scheduler_driver = cinder.scheduler.filter_scheduler.FilterScheduler
 enabled_backends = lvm
 
-# API
-enable_v1_api = false
-enable_v2_api = true
+#rootwrap_config = rootwrap.conf
+#volume_name_template = volume-%s
+#volumes_dir = /var/lib/cinder/volumes
 
 # GLANCE
 glance_host={{ controller_int_ip }}
-#glance_port=9292
-
-# RABBITMQ
-rpc_backend = rabbit
-[oslo_messaging_rabbit]
-rabbit_host={{ controller_int_ip }}
-rabbit_port = 5672
-rabbit_userid={{ cinder_mq_user }}
-rabbit_password={{ cinder_mq_password }}
-rabbit_virtual_host=/cinder
-
-[oslo_concurrency]
-lock_path = /var/lib/cinder/tmp
+glance_port=9292
 
 # DATABASE
 [database]
@@ -47,10 +36,23 @@ project_name = service
 username = cinder
 password = {{ cinder_keystone_password }}
 
+[oslo_concurrency]
+lock_path = $state_path/tmp
+
+# RABBITMQ
+[oslo_messaging_rabbit]
+rabbit_host={{ controller_int_ip }}
+rabbit_port = 5672
+rabbit_userid={{ cinder_mq_user }}
+rabbit_password={{ cinder_mq_password }}
+rabbit_virtual_host=/cinder
+
 # ISCSI
 [lvm]
 volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
 volume_group = {{ cinder_vg_name }}
 iscsi_protocol = iscsi
 iscsi_helper = tgtadm
+#iscsi_ip_address = {{ cinder_storage_node_ip }}
+#volumes_dir = $state_path/volumes
 

@@ -12,6 +12,7 @@
    - "nova-objectstore"
    - "nova-scheduler"
    - "python-novaclient"
+   - "nova-spiceproxy"
 
 - name: install nova-network
   apt: >

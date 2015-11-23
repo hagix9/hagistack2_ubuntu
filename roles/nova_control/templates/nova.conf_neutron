@@ -21,6 +21,14 @@ security_group_api=neutron
 linuxnet_interface_driver=nova.network.linux_net.LinuxOVSInterfaceDriver
 firewall_driver=nova.virt.firewall.NoopFirewallDriver
 
+osapi_volume_listen=0.0.0.0
+volume_api_class=nova.volume.cinder.API
+
+instance_usage_audit = True
+instance_usage_audit_period = hour
+notify_on_state_change = vm_and_task_state
+notification_driver = messagingv2
+
 #osapi_compute_listen=0.0.0.0
 #osapi_compute_listen_port=8774
 #rootwrap_config=/etc/nova/rootwrap.conf
@@ -28,7 +36,6 @@ firewall_driver=nova.virt.firewall.NoopFirewallDriver
 #connection_type=libvirt
 #root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf
 #volumes_path=/var/lib/nova/volumes
-
 
 [vnc]
 enabled=false

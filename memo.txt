@@ -166,3 +166,12 @@ cd /etc/init/; for i in $(ls -1 nova-* | cut -d \. -f 1); do sudo service $i res
 
 tail -f /var/lib/nova/instances/*/console.log
 
+
+systemctl restart neutron-server
+systemctl restart neutron-dhcp-agent
+systemctl restart neutron-metering-agent
+systemctl restart neutron-l3-agent
+systemctl restart neutron-lbaas-agent
+systemctl restart neutron-plugin-openvswitch-agent
+systemctl restart neutron-metadata-agent
+

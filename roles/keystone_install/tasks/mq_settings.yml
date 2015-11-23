@@ -1,0 +1,17 @@
+---
+
+- name: add keystone vhost
+  rabbitmq_vhost: 
+    name=/keystone
+    state=present
+
+- name: add keystone user
+  rabbitmq_user:
+    user={{ keystone_mq_user }}
+    password={{ keystone_mq_password }}
+    vhost=/keystone
+    configure_priv=.*
+    read_priv=.*
+    write_priv=.*
+    state=present
+

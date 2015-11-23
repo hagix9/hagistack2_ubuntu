@@ -1,18 +1,19 @@
 ---
 
-- name: create databases
-  mysql_db: >
-    name=ceilometer
-    state=present
-    encoding=utf8
-
 - name: database user create
-  mysql_user: >
-    name=ceilometer
-    host={{ item }}
-    password={{ mariadb_ceilometer_password }}
-    priv=ceilometer.*:ALL
-  with_items: 
-    - '%'
-    - 'localhost'
+  shell: >
+    mongo --host "{{ controller_int_ip }}" --eval '
+      db = db.getSiblingDB("ceilometer");
+      db.createUser({user: "ceilometer",
+      pwd: "{{ mongodb_ceilometer_password }}",
+      roles: [ "readWrite", "dbAdmin" ]})'
+  ignore_errors: True
+
+
+#  mongodb_user: >
+#    database=ceilometer
+#    name=ceilometer
+#    password={{ mongodb_ceilometer_password }}
+#    roles='readWrite,dbAdmin'
+#    state=present
 

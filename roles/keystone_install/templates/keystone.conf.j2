@@ -1493,7 +1493,7 @@ servers = {{ controller_int_ip }}:11211
 # Use durable queues in AMQP. (boolean value)
 # Deprecated group/name - [DEFAULT]/amqp_durable_queues
 # Deprecated group/name - [DEFAULT]/rabbit_durable_queues
-#amqp_durable_queues = false
+amqp_durable_queues = false
 
 # Auto-delete queues in AMQP. (boolean value)
 # Deprecated group/name - [DEFAULT]/amqp_auto_delete
@@ -1538,11 +1538,11 @@ servers = {{ controller_int_ip }}:11211
 
 # The RabbitMQ broker address where a single node is used. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_host
-#rabbit_host = localhost
+rabbit_host = {{ controller_int_ip }}
 
 # The RabbitMQ broker port where a single node is used. (integer value)
 # Deprecated group/name - [DEFAULT]/rabbit_port
-#rabbit_port = 5672
+rabbit_port = 5672
 
 # RabbitMQ HA cluster host:port pairs. (list value)
 # Deprecated group/name - [DEFAULT]/rabbit_hosts
@@ -1550,15 +1550,15 @@ servers = {{ controller_int_ip }}:11211
 
 # Connect over SSL for RabbitMQ. (boolean value)
 # Deprecated group/name - [DEFAULT]/rabbit_use_ssl
-#rabbit_use_ssl = false
+rabbit_use_ssl = false
 
 # The RabbitMQ userid. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_userid
-#rabbit_userid = guest
+rabbit_userid = {{ glance_mq_user }}
 
 # The RabbitMQ password. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_password
-#rabbit_password = guest
+rabbit_password = {{ keystone_mq_password }}
 
 # The RabbitMQ login method. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_login_method
@@ -1566,7 +1566,7 @@ servers = {{ controller_int_ip }}:11211
 
 # The RabbitMQ virtual host. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_virtual_host
-#rabbit_virtual_host = /
+rabbit_virtual_host = /keystone
 
 # How frequently to retry connecting with RabbitMQ. (integer value)
 #rabbit_retry_interval = 1

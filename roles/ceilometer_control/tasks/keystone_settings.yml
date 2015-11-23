@@ -1,30 +1,49 @@
 ---
 
 - name: create users
-  keystone_user: >
-    token={{ admin_token }}
-    tenant="service"
-    user={{ item.name }}
-    password={{ item.password }}
-  with_items: service_users
-
+  keystone:
+    command: "ensure_user"
+    user_name: "{{ item.name }}"
+    project_name: "service"
+    password: "{{ item.password }}"
+    endpoint: "{{ item.os_url }}"
+    token: "{{ admin_token }}"
+  with_items: users
+    
 - name: is added to the role you create a user
-  keystone_user: >
-    token={{ admin_token }}
-    role="admin"
-    user={{ item.name }}
-    tenant="service"
-  with_items: service_users
+  keystone:
+    command: "ensure_user_role"
+    user_name: "{{ item.name }}"
+    project_name: "service"
+    role_name: "admin"
+    endpoint: "{{ item.os_url }}"
+    token: "{{ admin_token }}"
+  with_items: users
 
-- name: endpoint create
-  keystone_service: >
-    token={{ admin_token }}
-    name={{ item.name }}
-    type={{ item.type }}
-    description="{{ item.description}}"
-    public_url={{ item.public_url }}
-    internal_url={{ item.internal_url }}
-    admin_url={{ item.admin_url }}
-    region={{ region }}
+- name: create service
+  keystone:
+    command: "ensure_service"
+    service_name: "{{ item.name }}"
+    service_type: "{{ item.type }}"
+    description: "{{ item.description }}"
+    endpoint: "{{ item.os_url }}"
+    token: "{{ admin_token }}"
+  with_items: services
+
+- name: create endpoints
+  keystone:
+    command: "ensure_endpoint"
+    region_name: "RegionOne"
+    service_name: "{{ item.name }}"
+    service_type: "{{ item.type }}"
+    endpoint_list:
+      - url: "{{ item.public_url }}"
+        interface: "public"
+      - url: "{{ item.internal_url }}"
+        interface: "internal"
+      - url: "{{ item.admin_url }}"
+        interface: "admin"
+    endpoint: "{{ item.os_url }}"
+    token: "{{ admin_token }}"
   with_items: services
 

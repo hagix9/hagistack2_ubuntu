@@ -1,6 +1,6 @@
 hagistack2 for ubuntu
 =====================
-OpenStackのバージョンIcehouseをインストールするAnsibleのPlaybookです。  
+OpenStackのバージョンLibertyをインストールするAnsibleのPlaybookです。  
 また、外部ライブラリにopenstack-ansible-modules( https://github.com/lorin/openstack-ansible-modules )を利用しています。
 
 出来ること
@@ -118,8 +118,7 @@ Ubuntu14.04の場合はリポジトリを追加するようにしています。
     ```
     git clone https://github.com/hagix9/hagistack2_ubuntu.git
     cd hagistack2_ubuntu
-    git submodule init
-    git submodule update
+    svn export https://github.com/openstack/openstack-ansible/trunk/playbooks/library library
     ```
 
  2. 実行ホストの設定

@@ -8,6 +8,8 @@
    - "neutron-server"
    - "neutron-plugin-ml2"
    - "python-neutronclient"
+   - "neutron-lbaas-agent"
+   - "neutron-metering-agent"
 
 - name: setting neutron server config
   template: >

@@ -1,19 +1,9 @@
 ---
 
-#- name: Keystone Install
-#  hosts: openstack_ctl
-#  become: true
-#  roles:
-#    - { role: keystone_install }
-
-#- name: Glance Install
-#  hosts: openstack_ctl
-#  become: true
-#  roles:
-#    - { role: glance }
-
-- name: OpenStack Image Registry
+- name: OpenStack Network Settings 
   hosts: openstack_ctl
   become: true
   roles:
-    - { role: glance_image }
+    - { role: network_settings }
+
+
