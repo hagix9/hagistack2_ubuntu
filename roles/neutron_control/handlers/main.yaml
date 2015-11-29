@@ -5,6 +5,6 @@
   with_items:
     - "neutron-server"
     - "nova-api"
-    - "neutron-lbaas-agent"
+#    - "neutron-lbaas-agent"
     - "neutron-metering-agent"
 

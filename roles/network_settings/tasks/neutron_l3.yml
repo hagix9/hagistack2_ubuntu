@@ -4,9 +4,9 @@
 
 - name: create router
   neutron: >
-    command: create_router
+    command: "create_router"
     openrc_path: /home/stack/generic-openrc.sh
-    router_name="{{ router_name }}"
+    router_name: "{{ router_name }}"
     external_gateway_info: public
   when: network_type == "neutron-l3"
     

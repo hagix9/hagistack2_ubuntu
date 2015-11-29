@@ -60,7 +60,7 @@
 - name: setting neutron config for neutron l3
   template: >
     src=ml2_conf.ini_l3.j2
-    dest=/etc/neutron/l3_agent.ini
+    dest=/etc/neutron/ml2_conf.ini
     owner=neutron
     group=neutron
     mode=0640

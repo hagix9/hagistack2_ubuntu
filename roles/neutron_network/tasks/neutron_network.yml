@@ -25,7 +25,7 @@
     - "neutron-dhcp-agent"
     - "neutron-metadata-agent"
     - "neutron-metering-agent"
-    - "neutron-lbaas-agent"
+#    - "neutron-lbaas-agent"
     - "neutron-plugin-openvswitch-agent"
   when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
@@ -160,7 +160,7 @@
     dest=/etc/neutron/plugins/ml2/ml2_conf.ini
     owner=root
     group=neutron
-    mode=0640
+    mode=0644
     backup=yes
   notify:
     - restart neutron network
@@ -172,7 +172,31 @@
     dest=/etc/neutron/plugins/ml2/ml2_conf.ini
     owner=root
     group=neutron
-    mode=0640
+    mode=0644
+    backup=yes
+  notify:
+    - restart neutron network
+  when: network_type == "neutron-l3"
+
+#- name: setting neutron openvswitch_agent config for neutron flat
+#  template: >
+#    src=openvswitch_agent.ini.j2
+#    dest=/etc/neutron/plugins/ml2/openvswitch_agent.ini
+#    owner=root
+#    group=neutron
+#    mode=0644
+#    backup=yes
+# notify:
+#    - restart neutron network
+#  when: network_type == "neutron-flat"
+
+- name: setting neutron openvswitch_agent config for neutron l3
+  template: >
+    src=openvswitch_agent.ini.j2
+    dest=/etc/neutron/plugins/ml2/ml2_conf.j2
+    owner=root
+    group=neutron
+    mode=0644
     backup=yes
   notify:
     - restart neutron network

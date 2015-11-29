@@ -20,6 +20,10 @@ network_api_class=nova.network.neutronv2.api.API
 security_group_api=neutron
 linuxnet_interface_driver=nova.network.linux_net.LinuxOVSInterfaceDriver
 firewall_driver=nova.virt.firewall.NoopFirewallDriver
+metadata_listen=0.0.0.0
+metadata_host= {{ controller_int_ip }}
+vif_plugging_is_fatal=True
+vif_plugging_timeout=300
 
 osapi_volume_listen=0.0.0.0
 volume_api_class=nova.volume.cinder.API
@@ -84,16 +88,13 @@ os_region_name = RegionOne
 lock_path=/var/lib/nova/tmp
 
 [neutron]
-url = http://{{ controller_ext_ip }}:9696
-auth_url = http://{{ controller_ext_ip }}:35357
-auth_plugin = password
-project_domain_id = default
-user_domain_id = default
-region_name = RegionOne
-project_name = service
-username = neutron
-password = {{ neutron_keystone_password }}
-service_neutron_metadata_proxy = True
+service_metadata_proxy=True
 metadata_proxy_shared_secret=metadata_secret
-#metadata_listen=0.0.0.0
-#metadata_host= {{ controller_int_ip }}
+url=http://{{ controller_ext_ip }}:9696
+auth_strategy=keystone
+admin_auth_url=http://{{ controller_int_ip }}:35357/v2.0
+admin_tenant_name=service
+admin_username=neutron
+admin_password={{ neutron_keystone_password }}
+default_tenant_id=default
+

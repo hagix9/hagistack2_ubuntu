@@ -774,6 +774,15 @@ connection=mysql+pymysql://neutron:{{ mariadb_neutron_password }}@{{ controller_
 # pool_timeout = 10
 
 [nova]
+auth_url = http://{{ controller_int_ip }}:35357
+auth_plugin = password
+project_domain_id = default
+user_domain_id = default
+region_name = RegionOne
+project_name = service
+username = nova
+password = {{ neutron_keystone_password }}
+
 # Name of the plugin to load
 # auth_plugin =
 
@@ -949,7 +958,7 @@ lock_path = $state_path/lock
 
 # Use durable queues in AMQP. (boolean value)
 # Deprecated group/name - [DEFAULT]/rabbit_durable_queues
-# amqp_durable_queues = false
+amqp_durable_queues = false
 
 # Auto-delete queues in AMQP. (boolean value)
 # Deprecated group/name - [DEFAULT]/amqp_auto_delete
