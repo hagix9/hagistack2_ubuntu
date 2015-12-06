@@ -34,7 +34,7 @@ dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
 # iproute2 package that supports namespaces). This option is deprecated and
 # will be removed in a future release, at which point the old behavior of
 # use_namespaces = True will be enforced.
-# use_namespaces = True
+use_namespaces = True
 
 # In some cases the neutron router is not present to provide the metadata
 # IP but the DHCP server can be used to provide this info. Setting this
@@ -75,7 +75,7 @@ dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
 
 # Comma-separated list of DNS servers which will be used by dnsmasq
 # as forwarders.
-# dnsmasq_dns_servers =
+dnsmasq_dns_servers = 8.8.8.8
 
 # Base log dir for dnsmasq logging. The log contains DHCP and DNS log
 # information and is useful for debugging issues with either DHCP or DNS.

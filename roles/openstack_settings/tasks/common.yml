@@ -1,40 +1,30 @@
 ---
 
-- command: >
-    ls {{ operate_user_home }}/{{ keypaire_name }}
-  register: exist_keypair
-  ignore_errors: True
-  failed_when: exist_keypair.rc not in [0, 1]
-
 - name: create keypair
-  shell: >
-    . {{ operate_user_home }}/generic01-openrc.sh ; nova keypair-add {{ keypaire_name }} > {{ operate_user_home }}/{{ keypaire_name }}
-  ignore_errors: True
-  when: exist_keypair.rc == 2
-
-- file: >
-    path={{ operate_user_home }}/{{ keypaire_name }}
-    owner={{ operate_user }}
-    group={{ operate_user }}
-    mode=0600
-  ignore_errors: True
-  when: exist_keypair.rc == 2
-
-- shell: >
-    . {{ operate_user_home }}/admin-openrc.sh ; test $(nova flavor-list | grep m1.tiny | awk -F'|' '{print $5}' | sed -e 's/^  *//g') -eq 0
-  register: check_m1_tiny
-  ignore_errors: True
-  failed_when: check_m1_tiny.rc not in [0, 1]
+  os_keypair:
+    cloud: "{{ generic_project01 }}"
+    state: "present"
+    name:  "{{ keypaire_name }}"
+    public_key_file: "{{ operate_user_home }}/.ssh/id_rsa.pub"
 
 - name: delete m1.tiny
-  shell: >
-    . {{ operate_user_home }}/admin-openrc.sh ; nova flavor-delete m1.tiny
-  ignore_errors: True
-  when: check_m1_tiny.rc != 0
+  os_nova_flavor:
+    cloud=admin
+    state="absent"
+    name="m1.tiny"
 
 - name: remake m1.tiny
-  shell: >
-    . {{ operate_user_home }}/admin-openrc.sh ; nova flavor-create m1.tiny 1 512 0 1
-  ignore_errors: True
-  when: check_m1_tiny.rc != 0
+  os_nova_flavor:
+    cloud=admin
+    state="present"
+    name="m1.tiny"
+    ram="512"
+    vcpus="1"
+    disk="0"
+    flavorid="1"
+
+#  shell: >
+#    . {{ operate_user_home }}/admin-openrc.sh ; nova flavor-create m1.tiny 1 512 0 1
+#  ignore_errors: True
+#  when: check_m1_tiny.rc != 0
 

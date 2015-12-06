@@ -1,0 +1,24 @@
+clouds:
+  admin:
+    auth:
+      auth_url: http://{{ controller_int_ip }}:35357/v3
+      password: {{ admin_password }}
+      project_domain_id: default
+      project_name: admin
+      user_domain_id: default
+      username: admin
+    identity_api_version: '3'
+    image_api_version: '2'
+    region_name: RegionOne
+  stack:
+    auth:
+      auth_url: http://{{ controller_int_ip }}:35357/v3
+      password: {{ generic_password01 }}
+      project_domain_id: default
+      project_name: {{ generic_project01 }}
+      user_domain_id: default
+      username: {{ generic_user01 }}
+    identity_api_version: '3'
+    image_api_version: '2'
+    region_name: RegionOne
+

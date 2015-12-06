@@ -1,7 +1,7 @@
 ---
 # Operator User
 operate_user: stack
-operate_user_home: /home/stack
+operate_user_home: /home/{{ operate_user }}
 # make_pass-> openssl passwd -salt openstack -1 stack
 operate_user_password: $1$openstac$ZyvPxUXR5eJLA0ClbcZRe1
 
@@ -9,7 +9,7 @@ operate_user_password: $1$openstac$ZyvPxUXR5eJLA0ClbcZRe1
 virt_type: kvm
 
 # Proxy
-http_proxy: http://10.10.10.10:8888
+#http_proxy: http://10.10.10.10:8888
 proxy_env:
   http_proxy: "{{ http_proxy }}"
   https_proxy: "{{ http_proxy }}"
@@ -26,8 +26,8 @@ ntp_servers:
   - 3.debian.pool.ntp.org
 
 # Controller Host IP's
-controller_ext_ip: 192.168.10.50
-controller_int_ip: 192.168.10.50
+controller_ext_ip: 192.168.122.50
+controller_int_ip: 192.168.122.50
 
 # MariaDB Options
 mariadb_root_password: root
@@ -35,6 +35,8 @@ mariadb_root_password: root
 # Keystone Options
 mariadb_keystone_password: password
 admin_token: ADMIN
+keystone_mq_user: glance
+keystone_mq_password: secrete
 cert_subject_c: JP
 cert_subject_st: Tokyo
 cert_subject_l: Chiyoda
@@ -66,8 +68,8 @@ nova_mq_user: nova
 nova_mq_password: secrete
 
 # Ceilometer Options
-use_ceilometer: not_use
-mariadb_ceilometer_password: password
+use_ceilometer: use
+mongodb_ceilometer_password: password
 ceilometer_keystone_password: secrete
 ceilometer_mq_user: ceilometer
 ceilometer_mq_password: secrete
@@ -109,7 +111,7 @@ cinder_vg_name: cinder-volumes
 #    cidr: 0.0.0.0/0
 #float_ip_ranges:
 #  range01: 
-#    ranges: 192.168.10.112/28
+#    ranges: 192.168.122.112/28
 
 # Network(for neutron)
 mariadb_neutron_password: password
@@ -123,9 +125,9 @@ neutron_mq_password: secrete
 #neutron_flat_networks:
 #  network01:
 #    name: sharednet1
-#    subnet: 192.168.10.0/24
-#    ip_pool_start: 192.168.10.151
-#    ip_pool_end: 192.168.10.200
+#    subnet: 192.168.122.0/24
+#    ip_pool_start: 192.168.122.151
+#    ip_pool_end: 192.168.122.200
 #    dns1: 8.8.4.4
 #    dns2: 8.8.8.8
 #secgroup_rules:
@@ -155,24 +157,39 @@ neutron_l3_internal_networks:
 neutron_l3_external_networks:
   external_network01:
     subnet_name: external_subnet01
-    gateway: 192.168.10.1
-    subnet: 192.168.10.0/24
-    ip_pool_start: 192.168.10.151
-    ip_pool_end: 192.168.10.200
+    gateway: 192.168.122.1
+    subnet: 192.168.122.0/24
+    ip_pool_start: 192.168.122.151
+    ip_pool_end: 192.168.122.200
     dns1: 8.8.4.4
     dns2: 8.8.8.8
+#secgroup_rule01:
+#  rule:
+#    name: default
+#    protocol: icmp
+#    from_port: -1
+#    to_port: -1
+#    cidr: 0.0.0.0/0
+#secgroup_rule02:
+#  rule:
+#    name: default
+#    protocol: tcp
+#    from_port: 22
+#    to_port: 22
+#    cidr: 0.0.0.0/0
+
 secgroup_rules:
   rule01:
-    name: default
-    protocol: tcp
-    from_port: 22
-    to_port: 22
-    cidr: 0.0.0.0/0
-  rule02:
     name: default
     protocol: icmp
     from_port: -1
     to_port: -1
+    cidr: 0.0.0.0/0
+  rule02:
+    name: default
+    protocol: tcp
+    from_port: 22
+    to_port: 22
     cidr: 0.0.0.0/0
 
 # Keypair

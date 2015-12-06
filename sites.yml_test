@@ -1,9 +1,19 @@
----
+#- name: Keystone Settings
+#  hosts: openstack_ctl
+#  become: true
+#  roles:
+#    - { role: keystone_settings }
 
-- name: OpenStack Network Settings 
+- name: OpenStack Common Settings
   hosts: openstack_ctl
   become: true
   roles:
-    - { role: network_settings }
+    - { role: openstack_settings }
 
+
+#- name: OpenStack Network Settings
+#  hosts: openstack_ctl
+#  become: true
+#  roles:
+#    - { role: network_settings }
 

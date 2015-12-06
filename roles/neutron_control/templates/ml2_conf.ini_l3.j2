@@ -2,14 +2,14 @@
 # (ListOpt) List of network type driver entrypoints to be loaded from
 # the neutron.ml2.type_drivers namespace.
 #
-type_drivers = flat,vlan,gre,vxlan
+type_drivers = flat,vlan
 # Example: type_drivers = flat,vlan,gre,vxlan,geneve
 
 # (ListOpt) Ordered list of network_types to allocate as tenant
 # networks. The default value 'local' is useful for single-box testing
 # but provides no connectivity between hosts.
 #
-tenant_network_types = gre
+tenant_network_types = vlan,flat
 # Example: tenant_network_types = vlan,gre,vxlan,geneve
 
 
@@ -57,14 +57,13 @@ mechanism_drivers = openvswitch
 # Allowed values for external_network_type config option depend on the
 # network type values configured in type_drivers config option.
 # external_network_type =
-# Example: external_network_type = local
-
+# Example: external_network_type = local 
 [ml2_type_flat]
 # (ListOpt) List of physical_network names with which flat networks
 # can be created. Use * to allow flat networks with arbitrary
 # physical_network names.
 #
-flat_networks = public
+# flat_networks = external
 # Example:flat_networks = physnet1,physnet2
 # Example:flat_networks = *
 
@@ -74,18 +73,18 @@ flat_networks = public
 # tenant networks, as well as ranges of VLAN tags on each
 # physical_network available for allocation as tenant networks.
 #
-# network_vlan_ranges =
+network_vlan_ranges = internal01:100:200
 # Example: network_vlan_ranges = physnet1:1000:2999,physnet2
 
 [ml2_type_gre]
 # (ListOpt) Comma-separated list of <tun_min>:<tun_max> tuples enumerating ranges of GRE tunnel IDs that are available for tenant network allocation
-tunnel_id_ranges = 1:1000
+# tunnel_id_ranges = 1:1000
 
 [ml2_type_vxlan]
 # (ListOpt) Comma-separated list of <vni_min>:<vni_max> tuples enumerating
 # ranges of VXLAN VNI IDs that are available for tenant network allocation.
 #
-#vni_ranges = 1:1000
+# vni_ranges = 1:1000
 
 # (StrOpt) Multicast group for the VXLAN interface. When configured, will
 # enable sending all broadcast traffic to this multicast group. When left
@@ -118,4 +117,4 @@ firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewal
 
 # Use ipset to speed-up the iptables security groups. Enabling ipset support
 # requires that ipset is installed on L2 agent node.
-enable_ipset = True
+# enable_ipset = True

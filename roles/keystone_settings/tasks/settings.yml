@@ -75,6 +75,13 @@
     append=yes
     groups=sudo
 
+- name: create a user for ssh_keygen to use the openstack
+  user: >
+    name={{ operate_user }}
+    generate_ssh_key=yes
+    ssh_key_bits=2048
+    ssh_key_file=.ssh/id_rsa
+
 - name: distribute openrc for admin
   template: >
     src=admin-openrc.sh.j2
@@ -83,10 +90,42 @@
     group={{ operate_user }}
     mode=0600
 
-- name: distribute openrc for generic01
+- name: distribute openrc for operate_user
   template: >
     src=generic01-openrc.sh.j2
     dest={{ operate_user_home }}/generic01-openrc.sh
+    owner={{ operate_user }}
+    group={{ operate_user }}
+    mode=0600
+
+- name: make directory for OS_CLOUD for admin
+  file: >
+    path=/root/.config/openstack
+    state=directory
+    owner=root
+    group=root
+    mode=0755
+
+- name: distribute OS_CLOUD for admin
+  template: >
+    src=clouds.yaml.j2
+    dest=/root/.config/openstack/clouds.yaml
+    owner=root
+    group=root
+    mode=0600
+
+- name: make directory for OS_CLOUD for operate_user
+  file: >
+    path=/home/{{ operate_user }}/.config/openstack/clouds.yaml
+    state=directory
+    owner={{ operate_user }}
+    group={{ operate_user }}
+    mode=0755
+
+- name: distribute OS_CLOUD for operate_user
+  template: >
+    src=clouds.yaml.j2
+    dest={{ operate_user_home }}/.config/openstack/clouds.yaml
     owner={{ operate_user }}
     group={{ operate_user }}
     mode=0600

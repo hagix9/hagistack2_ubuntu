@@ -193,7 +193,7 @@
 - name: setting neutron openvswitch_agent config for neutron l3
   template: >
     src=openvswitch_agent.ini.j2
-    dest=/etc/neutron/plugins/ml2/ml2_conf.j2
+    dest=/etc/neutron/plugins/ml2/openvswitch_agent.ini
     owner=root
     group=neutron
     mode=0644

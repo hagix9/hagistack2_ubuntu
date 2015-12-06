@@ -22,7 +22,7 @@ interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
 # iproute2 package that supports namespaces). This option is deprecated and
 # will be removed in a future release, at which point the old behavior of
 # use_namespaces = True will be enforced.
-# use_namespaces = True
+use_namespaces = True
 
 # If use_namespaces is set as False then the agent can only configure one router.
 
@@ -65,7 +65,7 @@ interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
 # empty value for the linux bridge. when this parameter is set, each L3 agent
 # can be associated with no more than one external network.
 # This option is deprecated and will be removed in the M release.
-external_network_bridge = br-ex
+# external_network_bridge =
 
 # TCP Port used by Neutron metadata server
 # metadata_port = 9697

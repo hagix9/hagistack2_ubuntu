@@ -112,48 +112,48 @@
   roles:
     - { role: cinder_volume, when: use_cinder == "use" }
 
-#- name: Ceilometer Controller Install
-#  hosts: openstack_ctl
-#  become: true
-#  roles:
-#    - { role: ceilometer_control, when: use_ceilometer == "use" }
+- name: Ceilometer Controller Install
+  hosts: openstack_ctl
+  become: true
+  roles:
+    - { role: ceilometer_control, when: use_ceilometer == "use" }
 
-#- name: Ceilometer Compute Install
-#  #hosts: openstack_compute
-#  hosts: all
-#  become: true
-#  roles:
-#    - { role: ceilometer_compute, when: use_ceilometer == "use" }
+- name: Ceilometer Compute Install
+  #hosts: openstack_compute
+  hosts: all
+  become: true
+  roles:
+    - { role: ceilometer_compute, when: use_ceilometer == "use" }
 
-#- name: OpenStack Common Settings 
-#  hosts: openstack_ctl
-#  become: true
-#  roles:
-#    - { role: openstack_settings }
+- name: OpenStack Common Settings 
+  hosts: openstack_ctl
+  become: true
+  roles:
+    - { role: openstack_settings }
 
-#- name: OpenStack Neutron Service Restart For Control
-#  hosts: openstack_ctl
-#  become: true
-#  roles:
-#    - { role: neutron_restart_ctl, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+- name: OpenStack Neutron Service Restart For Control
+  hosts: openstack_ctl
+  become: true
+  roles:
+    - { role: neutron_restart_ctl, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
 
-#- name: OpenStack Neutron Service Restart For Network
-#  #hosts: openstack_network
-#  hosts: openstack_ctl
-#  become: true
-#  roles:
-#    - { role: neutron_restart_network, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+- name: OpenStack Neutron Service Restart For Network
+  #hosts: openstack_network
+  hosts: openstack_ctl
+  become: true
+  roles:
+    - { role: neutron_restart_network, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
 
-#- name: OpenStack Neutron Service Restart For Compute
-#  #hosts: openstack_compute
-#  hosts: all
-#  become: true
-#  roles:
-#    - { role: neutron_restart_compute, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+- name: OpenStack Neutron Service Restart For Compute
+  #hosts: openstack_compute
+  hosts: all
+  become: true
+  roles:
+    - { role: neutron_restart_compute, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
 
-#- name: OpenStack Network Settings 
-#  hosts: openstack_ctl
-#  become: true
-#  roles:
-#    - { role: network_settings }
+- name: OpenStack Network Settings 
+  hosts: openstack_ctl
+  become: true
+  roles:
+    - { role: network_settings }
 

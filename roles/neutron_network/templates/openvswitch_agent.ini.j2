@@ -23,8 +23,9 @@
 # this hypervisor.
 #
 local_ip = {{ ansible_ssh_host }}
-enable_tunneling = True
-bridge_mappings = external:br-ex
+#enable_tunneling = True
+#bridge_mappings = external:br-ex,internal01:br-eth1
+bridge_mappings = internal01:br-ex
 
 # (ListOpt) Comma-separated list of <physical_network>:<bridge> tuples
 # mapping physical network names to the agent's node-specific OVS
