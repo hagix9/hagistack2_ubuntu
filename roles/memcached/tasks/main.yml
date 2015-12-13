@@ -1,6 +1,6 @@
 ---
 
-- name: install memcached pkg
+- name: install Memcached
   apt: >
     name={{ item }}
     state=installed

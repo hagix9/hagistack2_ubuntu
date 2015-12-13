@@ -1,6 +1,6 @@
 ---
 
-- name: install mongodb pkg
+- name: install Mongodb
   apt: >
     name={{ item }}
     state=present
@@ -23,7 +23,7 @@
 - file: name={{item}} state=absent
   with_items: jarnal_file_cleanup.stdout_lines
 
-- name: start mongodb
+- name: start Mongodb
   service: >
     name=mongodb
     state=started enabled=yes

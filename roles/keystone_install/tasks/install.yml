@@ -1,6 +1,6 @@
 ---
 
-- name: install keystone pkgs
+- name: install Keystone
   apt: >
     name={{ item }}
     state=installed

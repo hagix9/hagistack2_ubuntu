@@ -1,6 +1,6 @@
 ---
 
-- name: install mariadb pkg
+- name: install Mariadb
   apt: >
     name={{ item }}
     state=present
@@ -16,7 +16,7 @@
   notify:
     - restart mariadb
 
-- name: start mysql
+- name: start Mariadb
   service: >
     name=mysql
     state=started enabled=yes
@@ -44,7 +44,7 @@
     name=""
     state=absent
  
-- name: remove mariadb test database
+- name: remove Mariadb test database
   mysql_db: >
     name=test
     state=absent

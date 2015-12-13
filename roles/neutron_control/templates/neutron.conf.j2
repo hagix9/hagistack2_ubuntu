@@ -8,7 +8,7 @@ verbose={{ log_verbose }}
 # the type of the router on the create request (admin-only attribute). Default
 # value is "False" to support legacy mode (centralized) routers.
 #
-# router_distributed = False
+router_distributed = True
 #
 # ===========End Global Config Option for Distributed L3 Router===============
 
@@ -74,7 +74,6 @@ core_plugin = ml2
 # with previous versions, the class name of a plugin can be specified instead
 # of its entrypoint name.
 #
-#service_plugins = router,firewall,lbaas,vpnaas,metering,qos
 service_plugins = router
 # Example: service_plugins = router,firewall,lbaas,vpnaas,metering,qos
 
@@ -106,7 +105,7 @@ auth_strategy = keystone
 # avoid mixing them up with MAC's allocated for tenant ports.
 # A 4 octet example would be dvr_base_mac = fa:16:3f:4f:00:00
 # The default is 3 octet
-# dvr_base_mac = fa:16:3f:00:00:00
+dvr_base_mac = fa:16:3f:00:00:00
 
 # Maximum amount of retries to generate a unique MAC address
 # mac_generation_retries = 16
@@ -365,7 +364,7 @@ notify_nova_on_port_status_changes = True
 notify_nova_on_port_data_changes = True
 
 # URL for connection to nova (Only supports one nova region currently).
-nova_uri = http://{{ controller_int_ip }}:8774/v2
+nova_url = http://{{ controller_int_ip }}:8774/v2
 
 # Name of nova region to use. Useful if keystone manages more than one region
 # nova_region_name =

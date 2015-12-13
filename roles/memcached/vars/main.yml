@@ -1,3 +1,5 @@
+---
+
 memcached_pkgs:
   - memcached
   - python-memcache

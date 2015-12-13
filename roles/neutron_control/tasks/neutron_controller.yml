@@ -21,11 +21,10 @@
     backup=yes
   notify:
     - restart neutron control
-  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - name: setting neutron ml2 config
   template: >
-    src=ml2_conf.ini_l3.j2
+    src=ml2_conf.ini.j2
     dest=/etc/neutron/plugins/ml2/ml2_conf.ini
     owner=root
     group=neutron
@@ -33,7 +32,6 @@
     backup=yes
   notify:
     - restart neutron control
-  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 
 - name: neutron setup
   shell: >
@@ -43,20 +41,4 @@
   become_user: neutron
   notify:
     - restart neutron control
-  when: network_type == "neutron-flat" or network_type == "neutron-l3"
-
-#- name: check nova_tenant_id
-#  shell: . /home/stack/admin-openrc.sh ; openstack project list | grep service | awk '{print $2}'
-#  register: nova_tenant_id
-#  when: network_type == "neutron-flat" or network_type == "neutron-l3"
-
-#- name: setting neutron config nova_tenant_id
-#  lineinfile:
-#    dest=/etc/neutron/neutron.conf
-#    state=present
-#    regexp='xxxx'
-#    line="nova_admin_tenant_id = {{ item }}"
-#    backup=yes
-#  with_items: nova_tenant_id.stdout_lines
-#  when: network_type == "neutron-flat" or network_type == "neutron-l3"
 

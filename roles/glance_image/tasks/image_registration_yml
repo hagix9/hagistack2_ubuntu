@@ -25,30 +25,13 @@
   environment: "{{ proxy_env }}"
   when: http_proxy is defined
 
-#- name: install libguestfs-tools
-#  apt: >
-#    pkg=libguestfs-tools
-#    state=installed
-
-#- name: install libstring-mkpasswd-perl
-#  apt: >
-#    pkg=libstring-mkpasswd-perl
-#    state=installed
-
-#- name: change cirros password 
-#  shell: >- 
-#    mkpasswd.pl {{ cirros_password }}
-#  ignore_errors: True
-
 - name: direct image registeration
-  glance:
-    command: 'image-create'
-    openrc_path: /home/stack/admin-openrc.sh
-    image_name: cirros
-    image_url: "https://example-domain.com/cirros-0.3.2-source.tar.gz"
-    image_container_format: bare
-    image_disk_format: qcow2
-    image_is_public: True
-
-
+  os_image:
+    state: present
+    cloud: "{{ generic_project01 }}"
+    name: "{{ item.name }}"
+    container_format: "{{ item.container_format }}"
+    disk_format: "{{ item.disk_format }}"
+    filename: "{{ glance_image_tmp_dir }}/{{ item.filename }}"
+  with_items: glance_direct_images
 

@@ -6,7 +6,6 @@
     state: "present"
     name: "{{ item.key }}"
   with_dict: "neutron_l3_internal_networks"
-  when: network_type == "neutron-l3"
 
 - name: create internal subnet for neutron l3
   os_subnet:
@@ -22,7 +21,6 @@
       - destination: "0.0.0.0/0"
         nexthop: "{{ item.value.gateway }}"
   with_dict: "neutron_l3_internal_networks"
-  when: network_type == "neutron-l3"
 
 - name: create router and add interface for internal_network
   os_router:
@@ -32,7 +30,6 @@
     interfaces:
       - "{{ item.value.subnet_name }}"
   with_dict: "neutron_l3_internal_networks"
-  when: network_type == "neutron-l3"
 
 - name: create external network for neutron l3
   os_network:
@@ -41,7 +38,6 @@
     name: "{{ item.key }}"
     external: "True"
   with_dict: neutron_l3_external_networks
-  when: network_type == "neutron-l3"
 
 - name: create external subnet for neutron l3
   os_subnet:
@@ -60,7 +56,6 @@
         nexthop: "{{ item.value.gateway }}"
     enable_dhcp: "False"
   with_dict: neutron_l3_external_networks
-  when: network_type == "neutron-l3"
 
 - name: create router gateway set for neutron l3
   os_router:
@@ -72,7 +67,6 @@
       - subnet: "{{ item.value.subnet_name }}"
         ip: "{{ item.value.ip_pool_start }}"
   with_dict: neutron_l3_external_networks
-  when: network_type == "neutron-l3"
 
 - name: secgroup settings for ssh
   os_security_group_rule:
@@ -92,5 +86,4 @@
     port_range_max: "{{ item.value.to_port }}"
     remote_ip_prefix: "{{ item.value.cidr }}"
   with_dict: secgroup_rules
-  when: network_type == "neutron-l3"
 

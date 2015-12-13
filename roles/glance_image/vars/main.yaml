@@ -4,28 +4,58 @@ glance_direct_images:
 #  - name: cirros-0.3.4-x86_64-disk.img
 #    url: http://download.cirros-cloud.net/0.3.4
 #    filename: cirros-0.3.4-x86_64-disk.img
-#    format: qcow2
-# - name: F23-x86_64
-#   url: https://download.fedoraproject.org/pub/fedora/linux/releases/23/Cloud/x86_64/Images/Fedora-Cloud-Base-23-20151030.x86_64.qcow2
-#   filename: Fedora-Cloud-Base-23-20151030.x86_64.qcow2
-#   format: qcow2
+#    disk_format: qcow2
+#    container_format: bare
+#    public: True
+
+#  - name: F22-x86_64
+#    url: http://ftp.yz.yamagata-u.ac.jp/pub/linux/fedora/linux/releases/22/Cloud/x86_64/Images/Fedora-Cloud-Base-22-20150521.x86_64.qcow2
+#    filename: Fedora-Cloud-Base-22-20150521.x86_64.qcow2
+#    disk_format: qcow2
+#    container_format: bare
+#    public: True
+
+#  - name: F23-x86_64
+#    url: https://download.fedoraproject.org/pub/fedora/linux/releases/23/Cloud/x86_64/Images/Fedora-Cloud-Base-23-20151030.x86_64.qcow2
+#    filename: Fedora-Cloud-Base-23-20151030.x86_64.qcow2
+#    disk_format: qcow2
+#    container_format: bare
+#    public: True
+
 #  - name: ubuntu-14.04.3-x86_64
 #    url: http://cloud-images.ubuntu.com/releases/14.04.3/release/ubuntu-14.04-server-cloudimg-amd64-disk1.img
 #    filename: ubuntu-14.04-server-cloudimg-amd64-disk1.img
-#    format: qcow2
+#    disk_format: qcow2
+#    container_format: bare
+#    public: True
+
 #  - name: ubuntu-15.04-x86_64
 #    url: http://cloud-images.ubuntu.com/releases/15.04/release/ubuntu-15.04-server-cloudimg-amd64-disk1.img
 #    filename: ubuntu-15.04-server-cloudimg-amd64-disk1.img
-#    format: qcow2
+#    disk_format: qcow2
+#    container_format: bare
+#    public: True
+
   - name: ubuntu-15.10-x86_64
     url: http://cloud-images.ubuntu.com/releases/15.10/release/ubuntu-15.10-server-cloudimg-amd64-disk1.img
     filename: ubuntu-15.10-server-cloudimg-amd64-disk1.img
-    format: qcow2
+    disk_format: qcow2
+    container_format: bare
+    public: True
 
-#  - name: centos7
-#    url: http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud-1503.qcow2
-#    filename: 
-#    format: qcow2
+#  - name: Centos6
+#    url: http://cloud.centos.org/centos/6/images/CentOS-6-x86_64-GenericCloud.qcow2
+#    filename: CentOS-6-x86_64-GenericCloud.qcow2
+#    disk_format: qcow2
+#    container_format: bare
+#    public: True
+
+#  - name: Centos7
+#    url: http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
+#    filename: CentOS-7-x86_64-GenericCloud.qcow2
+#    disk_format: qcow2
+#    container_format: bare
+#    public: True
 
 #For Ubuntu
 #ssh -i /home/stack/mykey ubuntu@10.0.0.2

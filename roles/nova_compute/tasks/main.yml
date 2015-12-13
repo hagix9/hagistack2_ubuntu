@@ -1,5 +1,4 @@
 ---
 
 - include: nova_compute.yml
-- include: nova_metadata.yml
 

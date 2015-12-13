@@ -1,6 +1,6 @@
 ---
 
-- name: install rabbitmq
+- name: install Rabbitmq
   apt: pkg=rabbitmq-server state=installed
 
 - name: remove guest user

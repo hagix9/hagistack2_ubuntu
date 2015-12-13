@@ -1,17 +1,1 @@
-[ml2]
-type_drivers = local,flat
-mechanism_drivers = openvswitch,l2population
-
-[ml2_type_flat]
-flat_networks = *
-
-[securitygroup]
-enable_security_group = True
-firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
-
-[ovs]
-enable_tunneling = False
-local_ip = {{ ansible_ssh_host }}
-network_vlan_ranges = physnet1
-bridge_mappings = physnet1:br-ex
-
+../../neutron_control/templates/ml2_conf.ini.j2

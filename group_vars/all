@@ -14,9 +14,9 @@ proxy_env:
   http_proxy: "{{ http_proxy }}"
   https_proxy: "{{ http_proxy }}"
 
-# NIC
-int_nic: eth0
-ext_nic: eth1
+# NIC (currently unused)
+#int_nic: eth0
+#ext_nic: eth1
 
 # Chrony Options
 ntp_servers:
@@ -58,9 +58,6 @@ glance_mq_user: glance
 glance_mq_password: secrete
 glance_image_tmp_dir: /opt/openstack/images
 
-#Glance Image Options
-#cirros_password: test
-
 # Nova Options
 mariadb_nova_password: password
 nova_keystone_password: secrete
@@ -89,63 +86,13 @@ cinder_vg_name: cinder-volumes
 #for nfs
 #cinder_backend: nfs
 
-# Network(for nova-network)
-#network_type: nova-network
-#nova_networks:
-#  network01:
-#    fixed_range: 10.10.10.0/24
-#    dns1: 8.8.8.8
-#    bridge_interface: "{{ int_nic }}"
-#secgroup_rules:
-#  rule01:
-#    name: default
-#    protocol: tcp
-#    from_port: 22
-#    to_port: 22
-#    cidr: 0.0.0.0/0
-#  rule02:
-#    name: default
-#    protocol: icmp
-#    from_port: -1
-#    to_port: -1
-#    cidr: 0.0.0.0/0
-#float_ip_ranges:
-#  range01: 
-#    ranges: 192.168.122.112/28
-
 # Network(for neutron)
 mariadb_neutron_password: password
 neutron_keystone_password: secrete
 neutron_mq_user: neutron
 neutron_mq_password: secrete
 
-# For Neutron Flat
-
-#network_type: neutron-flat
-#neutron_flat_networks:
-#  network01:
-#    name: sharednet1
-#    subnet: 192.168.122.0/24
-#    ip_pool_start: 192.168.122.151
-#    ip_pool_end: 192.168.122.200
-#    dns1: 8.8.4.4
-#    dns2: 8.8.8.8
-#secgroup_rules:
-#  rule01:
-#    name: default
-#    protocol: tcp
-#    from_port: 22
-#    to_port: 22
-#    cidr: 0.0.0.0/0
-#  rule02:
-#    name: default
-#    protocol: icmp
-#    from_port: -1
-#    to_port: -1
-#    cidr: 0.0.0.0/0
-
-# For Neutron L3
-network_type: neutron-l3
+# For Neutron
 router_name: router01
 neutron_l3_internal_networks:
   internal_network01:
@@ -163,20 +110,6 @@ neutron_l3_external_networks:
     ip_pool_end: 192.168.122.200
     dns1: 8.8.4.4
     dns2: 8.8.8.8
-#secgroup_rule01:
-#  rule:
-#    name: default
-#    protocol: icmp
-#    from_port: -1
-#    to_port: -1
-#    cidr: 0.0.0.0/0
-#secgroup_rule02:
-#  rule:
-#    name: default
-#    protocol: tcp
-#    from_port: 22
-#    to_port: 22
-#    cidr: 0.0.0.0/0
 
 secgroup_rules:
   rule01:

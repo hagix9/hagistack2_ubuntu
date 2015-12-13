@@ -22,7 +22,7 @@ interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
 # iproute2 package that supports namespaces). This option is deprecated and
 # will be removed in a future release, at which point the old behavior of
 # use_namespaces = True will be enforced.
-use_namespaces = True
+# use_namespaces = True
 
 # If use_namespaces is set as False then the agent can only configure one router.
 
@@ -59,31 +59,31 @@ use_namespaces = True
 # an external network gateway configured.  This option should be True only
 # for a single agent in a Neutron deployment, and may be False for all agents
 # if all routers must have an external network gateway
-handle_internal_only_routers = True
+# handle_internal_only_routers = True
 
 # Name of bridge used for external network traffic. This should be set to
 # empty value for the linux bridge. when this parameter is set, each L3 agent
 # can be associated with no more than one external network.
 # This option is deprecated and will be removed in the M release.
-external_network_bridge = br-ex
+# external_network_bridge = br-ex
 
 # TCP Port used by Neutron metadata server
-metadata_port = 9697
+# metadata_port = 9697
 
 # Send this many gratuitous ARPs for HA setup. Set it below or equal to 0
 # to disable this feature.
-send_arp_for_ha = 3
+# send_arp_for_ha = 3
 
 # seconds between re-sync routers' data if needed
-periodic_interval = 40
+# periodic_interval = 40
 
 # seconds to start to sync routers' data after
 # starting agent
-periodic_fuzzy_delay = 5
+# periodic_fuzzy_delay = 5
 
 # enable_metadata_proxy, which is true by default, can be set to False
 # if the Nova metadata server is not available
-enable_metadata_proxy = True
+# enable_metadata_proxy = True
 
 # Iptables mangle mark used to mark metadata valid requests
 # metadata_access_mark = 0x1
@@ -100,7 +100,7 @@ enable_metadata_proxy = True
 # This should not be a problem any more.  Refer to bug:
 # https://bugs.launchpad.net/neutron/+bug/1418079
 # This option is deprecated and will be removed in the M release
-router_delete_namespaces = False
+# router_delete_namespaces = True
 
 # Timeout for ovs-vsctl commands.
 # If the timeout expires, ovs commands will fail with ALARMCLOCK error.
@@ -115,8 +115,7 @@ router_delete_namespaces = False
 # - dvr_snat: this enables centralized SNAT support in conjunction with
 #   DVR. This mode must be used for an L3 agent running on a centralized
 #   node (or in single-host deployments, e.g. devstack).
-agent_mode = dvr_snat
-allow_automatic_l3agent_failover = False
+agent_mode = dvr
 
 # Location to store keepalived and all HA configurations
 # ha_confs_path = $state_path/ha_confs

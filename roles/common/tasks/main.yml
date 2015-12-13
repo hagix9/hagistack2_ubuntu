@@ -23,18 +23,29 @@
 - name: apt-get dist-upgrade
   apt: upgrade=dist cache_valid_time=3600
 
-- name: install python pip
+- name: install openstack related pkgs
   apt: >
     pkg={{ item }}
     state=present
   with_items:
-   - python-pip
+   - gcc
+   - python-dev
+   - crudini
+
+- name: check pip install
+  command: ls -l /usr/local/bin/pip
+  register: chk_pip_install
+  ignore_errors: True
+  failed_when: chk_pip_install.rc not in [0, 1]
+
+- name: install pip
+  shell: curl -kL https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
+  when: chk_pip_install.rc == 2
 
 - name: install openstack python modules
-  apt: >
-    pkg={{ item }}
-    state=present
+  pip:
+    name={{ item }}
   with_items:
-   - python-openstackclient
    - shade
+   - python-openstackclient
 

@@ -20,12 +20,6 @@
    - nova-compute-kvm
    - python-novaclient
 
-- name: install nova-network
-  apt: >
-    pkg=nova-network
-    state=installed
-  when: network_type == "nova-network"
-
 - name: setting kernel parameta
   template: >
     src=sysctl.conf.j2
@@ -57,11 +51,29 @@
     mode=0644
     backup=yes
   with_items:
-    - { src: 'libvirtd.conf.j2',    dst: '/etc/libvirt/libvirtd.conf' }
-    - { src: 'libvirt-bin.conf.j2', dst: '/etc/init/libvirt-bin.conf' }
-    - { src: 'libvirt-bin.j2',      dst: '/etc/default/libvirt-bin'   }
+    - { src: 'libvirtd.conf.j2',       dst: '/etc/libvirt/libvirtd.conf' }
+    - { src: 'libvirt-bin.conf.j2',    dst: '/etc/init/libvirt-bin.conf' }
+    - { src: 'libvirt-bin.j2',         dst: '/etc/default/libvirt-bin'   }
+    - { src: 'libvirt-bin.service.j2', dst: '/etc/systemd/system/multi-user.target.wants/libvirt-bin.service'   }
   notify:
     - restart libvirt-bin
+
+- name: reload systemd
+  command: systemctl --system daemon-reload
+  notify:
+    - restart libvirt-bin
+
+- name: setting nova config
+  template: >
+    src=nova.conf_neutron
+    dest=/etc/nova/nova.conf
+    owner=nova
+    group=nova
+    mode=0640
+    backup=yes
+  notify:
+    - restart nova-compute
+
 
 - name: setting nova-compute config
   template: >
@@ -74,20 +86,7 @@
   notify:
     - restart nova-compute
 
-- name: setting nova config for nova-network
-  template: >
-    src=nova.conf_nova-network
-    dest=/etc/nova/nova.conf
-    owner=nova
-    group=nova
-    mode=0640
-    backup=yes
-  notify:
-    - restart nova-compute
-    - restart nova-network
-  when: network_type == "nova-network"
-
-- name: setting nova config for neutron
+- name: setting nova config
   template: >
     src=nova.conf_neutron
     dest=/etc/nova/nova.conf
@@ -97,6 +96,4 @@
     backup=yes
   notify:
     - restart nova-compute
-  when: network_type == "neutron-flat" or network_type == "neutron-l3"
-
 

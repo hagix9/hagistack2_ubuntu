@@ -1,23 +1,13 @@
-export OS_USERNAME=admin
+export OS_PROJECT_DOMAIN_ID=default
+export OS_USER_DOMAIN_ID=default
+export OS_PROJECT_NAME=stack
+export OS_TENANT_NAME=stack
+export OS_USERNAME=stack
 export OS_PASSWORD=secrete
-export OS_TENANT_NAME=admin
-export OS_AUTH_URL=http://192.168.122.50:35357/v2.0/
+export OS_AUTH_URL=http://192.168.122.50:35357/v3
+export OS_IDENTITY_API_VERSION=3
+export OS_IMAGE_API_VERSION=2
 export PS1='\u@\h \W(keystone)\$ '
-
-#For nova-network
-
-nova network-create            \
-nova_network1                  \
---fixed-range-v4=10.10.10.0/24 \
---dns1=8.8.8.8                 \
---bridge-interface=eth0        \
---multi-host=T
-
-nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 
-nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 
-
-FLOAT_IP_RANGE=192.168.122.112/28
-nova-manage floating create --ip_range=192.168.122.112/28
 
 cd
 nova keypair-add mykey > mykey
@@ -27,106 +17,9 @@ chmod 600 mykey
 nova flavor-delete 1
 nova flavor-create m1.tiny 1 512 0 1
 
-nova boot --flavor 1 --image ubuntu1510 --security_group default --key-name mykey ubuntu01
-nova boot --flavor 1 --image centos6.5 --security_group default --key-name mykey centos65_01
-nova boot --flavor 1 --image centos6.5 --security_group default --key-name mykey centos65_02
-
-
-nova add-floating-ip centos65_01 192.168.122.113
-nova add-floating-ip centos65_02 192.168.122.114
-nova add-floating-ip ubuntu01 192.168.122.115 
-ssh -i mykey ubuntu@192.168.122.113
-ssh -i mykey cloud-user@192.168.122.113
-
-# LXC For Nova Compute
-apt-get install lxc -y
-sed -i 's/^USE_LXC_BRIDGE="true"/USE_LXC_BRIDGE="false"/' /etc/default/lxc-net
-
-apt-get install nova-compute-lxc -y
-restart nova-compute
-
-wget https://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-root.tar.gz
-truncate --size 2GB ubuntu-14.04-lxc.img
-sudo losetup -f ubuntu-14.04-lxc.img
-losetup -a
-mkfs /dev/loop0
-mkdir mnt
-mount /dev/loop0 mnt
-cd mnt
-tar -xvf ../trusty-server-cloudimg-amd64-root.tar.gz
-cd ../
-umount /dev/loop1 
-
-#Dekiagari inmage
-wget -O- http://oss.fulltrust.co.jp/disk_images/ubuntu-14.04-lxc.img.tar.xz | tar Jxvf -
-
-glance image-create --name ubuntu-14.04-lxc --is-public True \
-    --disk-format raw --container-format bare \
-    --progress --file ubuntu-14.04-lxc.img
-
 glance image-create --name "ubuntu1510" --file ubuntu-15.10-server-cloudimg-amd64-disk1.img --disk-format qcow2 --container-format bare --visibility public
 
-#For Nova Network
-nova boot --flavor 1 --image ubuntu-14.04-lxc --security_group default --key-name mykey ubuntu01
-#For Neutron
-NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'` 
-nova boot --flavor 1 --image ubuntu-14.04-lxc --security_group default --nic net-id=$NETWORK_ID --key-name mykey ubuntu01
-
-#Neutron
-#For Network and Compute Node
-apt-get install openvswitch-switch -y
-ovs-vsctl del-br br-int
-ovs-vsctl del-port br-ex eth0
-ovs-vsctl del-br br-ex
-ovs-vsctl add-br br-int
-ovs-vsctl add-br br-ex
-ovs-vsctl add-port br-ex eth0
-
-#Network Config Sample
-#Single NIC
-cat /etc/network/interfaces
-
-auto eth0
-iface eth0 inet manual
-    up ip link set dev $IFACE up
-    down ip link set dev $IFACE down
-
-auto br-ex
-iface br-ex inet static
-    address 192.168.122.50
-    netmask 255.255.255.0
-    network 192.168.122.0
-    gateway 192.168.122.1
-    dns-nameservers 192.168.122.1
-    broadcast 192.168.122.255
-
-#Two NIC
-cat /etc/network/interfaces
-auto eth0
-iface eth0 inet static
-       address 192.168.122.51
-       netmask 255.255.255.0
-       network 192.168.122.0
-       broadcast 192.168.122.255
-       gateway 192.168.122.1
-       dns-nameservers 192.168.122.1
-
-auto  eth1
-iface eth1 inet manual
-    up ip link set dev $IFACE up
-    down ip link set dev $IFACE down
-
-#Neutron Flat Network
-SERVICE_TENANT_ID=`keystone tenant-list | grep service | awk '{print $2}'`
-neutron net-create --tenant-id $SERVICE_TENANT_ID sharednet1 \
---shared --provider:network_type flat --provider:physical_network physnet1
-
-neutron subnet-create \
---ip-version 4 --tenant-id $SERVICE_TENANT_ID sharednet1 192.168.122.0/24 \
---allocation-pool start=192.168.122.151,end=192.168.122.200 \
---dns_nameservers list=true 8.8.4.4 8.8.8.8
-
-#Neutron L3 Network
+#Neutron Network Create
 neutron router-create router01
 neutron net-create internal_network01 
 neutron subnet-create \
@@ -141,21 +34,17 @@ neutron subnet-create external_network01 \
 EXT_NET_ID=`neutron net-list | grep external_network01 | awk '{ print $2 }'` 
 neutron router-gateway-set $ROUTER_ID $EXT_NET_ID 
 
-#Boot Instance For Neutron FLAT
-NETWORK_ID=`neutron net-list | grep sharednet1 | awk '{print $2}'`
-nova boot --flavor 1 --image ubuntu-14.04-x86_64 --security_group default --nic net-id=$NETWORK_ID --key-name mykey ubuntu01
-nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$NETWORK_ID --key-name mykey centos65_01
-
-#Boot Instance For Neutron L3
+#Boot Instance
 INT_NET_ID=`neutron net-list | grep internal_network01 | awk '{ print $2 }'` 
 nova boot --flavor 1 --image centos6.5 --security_group default --nic net-id=$INT_NET_ID --key-name mykey centos65_01
+nova boot --flavor 1 --image ubuntu1510 --security_group default --key-name mykey --nic net-id=$INT_NET_ID ubuntu01
+
 nova boot --flavor 1 --image ubuntu1510 --security_group default --key-name mykey --user-data cloud_init --nic net-id=$INT_NET_ID ubuntu01
 
 #cloud-config
 password: pass
 chpasswd: { expire: False }
 ssh_pwauth: True
-
 
 #Associate Floating IP For Neutron L3
 neutron floatingip-create external_network01
@@ -167,27 +56,17 @@ neutron floatingip-associate $FLOATING_ID $PORT_ID
 nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 
 nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 
 
-ssh -i mykey ubuntu@192.168.122.152
-
 #Service Restart
-cd /etc/init/; for i in $(ls -1 neutron-* | cut -d \. -f 1); do sudo service $i restart; done
-cd /etc/init/; for i in $(ls -1 nova-* | cut -d \. -f 1); do sudo service $i restart; done
+cd /etc/init.d/ ; for i in $(ls -1 neutron-* | cut -d \. -f 1) ; do sudo systemctl restart $i ; done
+cd /etc/init.d/ ; for i in $(ls -1 nova-* | cut -d \. -f 1) ; do sudo systemctl restart $i ; done
 
+#Console log
 tail -f /var/lib/nova/instances/*/console.log
 
-
-systemctl restart neutron-server
-systemctl restart neutron-dhcp-agent
-systemctl restart neutron-metering-agent
-systemctl restart neutron-l3-agent
-systemctl restart neutron-lbaas-agent
-systemctl restart neutron-plugin-openvswitch-agent
-systemctl restart neutron-metadata-agent
-
-glance image-create --name "ubuntu1510" --file /usr/local/src/ubuntu-15.10-server-cloudimg-amd64-disk1.img --disk-format qcow2 --container-format bare --visibility public 
-
+#Volume create
 openstack --os-cloud admin compute service list
 openstack --os-cloud stack volume create --size 1 vol01
 openstack --os-cloud stack volume delete vol01
 
 https://clouddocs.web.cern.ch/clouddocs/tutorial/create_a_volume.html
+

@@ -1,6 +1,6 @@
 ---
 
-- name: install glance pkgs
+- name: install Glance
   apt: >
     name={{ item }}
     state=installed

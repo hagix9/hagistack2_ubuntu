@@ -54,11 +54,11 @@
   roles:
     - { role: glance }
 
-#- name: OpenStack Image Registry
-#  hosts: openstack_ctl
-#  become: true
-#  roles:
-#    - { role: glance_image }
+- name: OpenStack Image Registry
+  hosts: openstack_ctl
+  become: true
+  roles:
+    - { role: glance_image }
 
 - name: Nova Controller Install
   hosts: openstack_ctl
@@ -77,21 +77,21 @@
   hosts: openstack_ctl
   become: true
   roles:
-    - { role: neutron_control, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+    - { role: neutron_control }
 
 - name: Neutron Network Install
   #hosts: openstack_network
   hosts: openstack_ctl
   become: true
   roles:
-    - { role: neutron_network, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+    - { role: neutron_network }
 
 - name: Neutron Compute Install
   #hosts: openstack_comptue
   hosts: all
   become: true
   roles:
-    - { role: neutron_compute, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+    - { role: neutron_compute }
 
 - name: Horizon Install
   hosts: openstack_ctl
@@ -135,21 +135,21 @@
   hosts: openstack_ctl
   become: true
   roles:
-    - { role: neutron_restart_ctl, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+    - { role: neutron_restart_ctl }
 
 - name: OpenStack Neutron Service Restart For Network
   #hosts: openstack_network
   hosts: openstack_ctl
   become: true
   roles:
-    - { role: neutron_restart_network, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+    - { role: neutron_restart_network }
 
 - name: OpenStack Neutron Service Restart For Compute
   #hosts: openstack_compute
   hosts: all
   become: true
   roles:
-    - { role: neutron_restart_compute, when: network_type == "neutron-flat" or network_type == "neutron-l3" }
+    - { role: neutron_restart_compute }
 
 - name: OpenStack Network Settings 
   hosts: openstack_ctl

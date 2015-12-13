@@ -1,5 +1,9 @@
+---
+
 - name: restart neutron compute
   service: name={{ item }} state=restarted
   with_items:
     - "neutron-plugin-openvswitch-agent"
+    - "neutron-metadata-agent.service"
+    - "neutron-l3-agent"
 

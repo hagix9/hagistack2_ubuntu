@@ -8,6 +8,3 @@
     - "nova-spiceproxy"
     - "nova-scheduler"
 
-- name: restart nova-network
-  service: name=nova-network state=restarted
-

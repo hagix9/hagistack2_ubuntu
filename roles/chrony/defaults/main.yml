@@ -1,6 +1,6 @@
 ---
 
-# Chrony Options
+# chrony Options
 ntp_servers:
   - 0.debian.pool.ntp.org
   - 1.debian.pool.ntp.org

@@ -1,3 +1,5 @@
+---
+
 glance_pkgs:
   - glance
   - python-glanceclient
